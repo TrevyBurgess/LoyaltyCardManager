@@ -1,7 +1,8 @@
-package com.cyberfeedforward.mycardmanager.ui.navigation
+package com.cyberfeedforward.mycardmanager.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,21 +14,21 @@ import com.cyberfeedforward.mycardmanager.ui.screens.settings.SettingsRoute
 fun AppNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    startDestinationRoute: String = TopLevelDestination.Home.route,
+    startDestination: String = AppDestination.Home.route,
 ) {
     NavHost(
         navController = navController,
-        startDestination = startDestinationRoute,
+        startDestination = startDestination,
         modifier = modifier,
     ) {
-        composable(TopLevelDestination.Home.route) {
-            HomeRoute()
+        composable(AppDestination.Home.route) {
+            HomeRoute(viewModel = viewModel())
         }
-        composable(TopLevelDestination.Cards.route) {
-            CardsRoute()
+        composable(AppDestination.Cards.route) {
+            CardsRoute(viewModel = viewModel())
         }
-        composable(TopLevelDestination.Settings.route) {
-            SettingsRoute()
+        composable(AppDestination.Settings.route) {
+            SettingsRoute(viewModel = viewModel())
         }
     }
 }

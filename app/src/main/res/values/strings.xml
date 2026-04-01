@@ -1,6 +1,3 @@
 <resources>
     <string name="app_name">MyCardManager</string>
-    <string name="nav_home">Home</string>
-    <string name="nav_cards">Cards</string>
-    <string name="nav_settings">Settings</string>
 </resources>
