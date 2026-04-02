@@ -71,24 +71,57 @@ fun CardsRoute(
             is ScanResultUi.Error -> scanResult.message
         }
 
-        AlertDialog(
-            onDismissRequest = viewModel::onScanResultDismissed,
-            confirmButton = {
-                TextButton(onClick = viewModel::onScanResultDismissed) {
-                    Text(text = "OK")
-                }
-            },
-            title = {
-                Text(
-                    text = when (scanResult) {
-                        is ScanResultUi.Success -> "Scanned code"
-                        is ScanResultUi.Error -> "Scan failed"
-                    }
-                )
-            },
-            text = {
-                Text(text = message)
-            },
-        )
+        if (scanResult is ScanResultUi.Success) {
+            ScanResultDialog(viewModel, message)
+        }
+        else {
+            ScanFailDialog(viewModel, message)
+        }
     }
+}
+
+@Composable
+private fun ScanResultDialog(
+    viewModel: CardsViewModel,
+    message: String
+) {
+    AlertDialog(
+        onDismissRequest = viewModel::onScanResultDismissed,
+        confirmButton = {
+            TextButton(onClick = viewModel::onScanResultDismissed) {
+                Text(text = "OK")
+            }
+        },
+        title = {
+            Text(
+                text = "Scanned code"
+            )
+        },
+        text = {
+            Text(text = message)
+        },
+    )
+}
+
+@Composable
+private fun ScanFailDialog(
+    viewModel: CardsViewModel,
+    message: String
+) {
+    AlertDialog(
+        onDismissRequest = viewModel::onScanResultDismissed,
+        confirmButton = {
+            TextButton(onClick = viewModel::onScanResultDismissed) {
+                Text(text = "OK")
+            }
+        },
+        title = {
+            Text(
+                text = "Scan failed"
+            )
+        },
+        text = {
+            Text(text = message)
+        },
+    )
 }
