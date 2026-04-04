@@ -197,4 +197,25 @@ class ScanHistoryStorageTest {
             dir.deleteRecursively()
         }
     }
+
+    @Test
+    fun readAll_whenRootIsSingleJsonObject_readsSingleEntry() {
+        val dir = createTempDir(prefix = "scan-history-")
+        try {
+            val file = File(dir, "scanned_codes.json")
+            file.writeText(
+                """{"name":"Solo","code":"999","type":"QrCode"}"""
+            )
+
+            val storage = ScanHistoryStorage(file)
+            val all = storage.readAll()
+
+            assertEquals(1, all.size)
+            assertEquals("Solo", all[0].name)
+            assertEquals("999", all[0].code)
+            assertEquals(ScannedCodeType.QrCode, all[0].type)
+        } finally {
+            dir.deleteRecursively()
+        }
+    }
 }

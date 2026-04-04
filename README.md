@@ -16,31 +16,15 @@ Here are the commands I used for setting up the app
 * When a QR code is scanned, identify the type of code scanned. Add this information to the dialog in ScanResultDialog
 * Add a text box called Name to the dialog in ScanResultDialog. Include the hint text 'What is your Card Name?'
 * Rename the OK button the Scanned Code page to Save. When the button is pressed, save the name, code number, and code type to a JSON file for later use.
-* Call the generated JSON file to scanned\_codes.json
-* Create a responsive grid for displaying information in CardsScreen.kt. For each entry in scanned\_codes.json, add an entry to the grid. The entry will contain name, a placeholder icon, and the scanned number
+* Call the generated JSON file to scanned_codes.json
+* Create a responsive grid for displaying information in CardsScreen.kt. For each entry in scanned_codes.json, add an entry to the grid. The entry will contain name, a placeholder icon, and the scanned number
 * The previous caused an exception: please check for index out of bound exception
-* 
-* 
-* Add menu 
-* 
-* 
+* Add Overflow menu mutton to right of each element of the grid for showing cards
 * When a person clicks on an item in the CardsScreen page, open a popup showing the Name, QR code or bar code, and number
+* Add Overflow menu mutton to right of each element of the grid for showing cards. When clicked open a popup menu. This menu will have 2 items Edit, Delete
+* When a person presses Delete, open a dialog asking for confirmation. If the user presses 'Yes', delete the record and update the UI
+* When a person presses the Edit button, open a brand new dialog. This dialog will show the image of the QR code or bar code, the number and name. The image will be determined by card type
+* Show the bar code in the edit dialog
 * 
-* 
-* 
-* 
-* 
-* 
-* 
-* The name in the Scanned Code popup isn't being displayed in the grid in the CardsScreen page
-* Remember state when the user rotates the phone
-* Refactor the code for showing the popup for showing the Name, QR code or bar code, and number. Place it into a method named CardDetailsPopup
-* When a person does a long click on an item in the CardsScreen page, open a popup menu showing menu options. Refactor this into a method called CardOpotionsPopup. Add an edit button to this menu, and a delete button
-* Make sure data is saved when user clicks Save button
-* Refactor the alert dialog into a separate method
-* 
-* 
-* 
-* f
-* 
-
+ 
+ 

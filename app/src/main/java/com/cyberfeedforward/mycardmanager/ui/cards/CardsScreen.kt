@@ -181,7 +181,7 @@ private fun CardsScreenPreview() {
                 ),
                 ScanHistoryStorage.SavedScan(
                     name = "My QR",
-                    code = "https://example.com",
+                    code = "666",
                     type = ScannedCodeType.QrCode,
                 ),
             ),

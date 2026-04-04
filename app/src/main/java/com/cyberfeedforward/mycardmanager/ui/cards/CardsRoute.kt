@@ -2,11 +2,14 @@ package com.cyberfeedforward.mycardmanager.ui.cards
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
@@ -45,6 +48,7 @@ fun CardsRoute(
 
     var editingIndex by remember { mutableStateOf<Int?>(null) }
     var editingName by rememberSaveable { mutableStateOf("") }
+    var editingScan by remember { mutableStateOf<ScanHistoryStorage.SavedScan?>(null) }
 
     var pendingDeleteIndex by remember { mutableStateOf<Int?>(null) }
 
@@ -87,6 +91,7 @@ fun CardsRoute(
             val scan = savedScans.getOrNull(index) ?: return@CardsScreen
             editingIndex = index
             editingName = scan.name
+            editingScan = scan
         },
         onDeleteScan = { index ->
             if (savedScans.getOrNull(index) != null) {
@@ -133,9 +138,23 @@ fun CardsRoute(
     }
 
     if (editingIndex != null) {
+        val scan = editingScan
+        val codeBitmap = remember(scan?.code, scan?.type) {
+            if (scan == null) {
+                return@remember null
+
+            }
+
+            generateCodeBitmapSafely(
+                value = scan.code,
+                type = scan.type,
+            )
+        }
+
         AlertDialog(
             onDismissRequest = {
                 editingIndex = null
+                editingScan = null
             },
             confirmButton = {
                 TextButton(
@@ -143,6 +162,7 @@ fun CardsRoute(
                         val index = editingIndex ?: return@TextButton
                         val scan = savedScans.getOrNull(index) ?: run {
                             editingIndex = null
+                            editingScan = null
                             return@TextButton
                         }
 
@@ -154,6 +174,7 @@ fun CardsRoute(
                             savedScans = storage.readAll()
                         }
                         editingIndex = null
+                        editingScan = null
                     }
                 ) {
                     Text(text = "Save")
@@ -163,6 +184,7 @@ fun CardsRoute(
                 TextButton(
                     onClick = {
                         editingIndex = null
+                        editingScan = null
                     }
                 ) {
                     Text(text = "Cancel")
@@ -172,12 +194,33 @@ fun CardsRoute(
                 Text(text = "Edit")
             },
             text = {
-                OutlinedTextField(
-                    value = editingName,
-                    onValueChange = { editingName = it },
-                    label = { Text(text = "Card Name") },
-                    singleLine = true,
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (scan != null && codeBitmap != null) {
+                        Image(
+                            bitmap = codeBitmap.asImageBitmap(),
+                            contentDescription = "Card code",
+                            modifier = if (scan.type.isQr) {
+                                Modifier.size(220.dp)
+                            } else {
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(120.dp)
+                            },
+                        )
+                        Text(
+                            text = scan.code,
+                            fontSize = 20.sp,
+                        )
+                        Text(text = "Type: ${scan.type.label}")
+                    }
+
+                    OutlinedTextField(
+                        value = editingName,
+                        onValueChange = { editingName = it },
+                        label = { Text(text = "Card Name") },
+                        singleLine = true,
+                    )
+                }
             },
         )
     }
@@ -221,18 +264,10 @@ private fun ScanResultDialog(
     var cardName by rememberSaveable { mutableStateOf("") }
 
     val codeBitmap = remember(message, type) {
-        if (type.isQr) {
-            CodeImageGenerator.generateQrBitmap(
-                value = message,
-                sizePx = 512,
-            )
-        } else {
-            CodeImageGenerator.generateBarcodeBitmap(
-                value = message,
-                widthPx = 768,
-                heightPx = 256,
-            )
-        }
+        generateCodeBitmapSafely(
+            value = message,
+            type = type,
+        )
     }
 
     AlertDialog(
@@ -265,11 +300,13 @@ private fun ScanResultDialog(
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Image(
-                    bitmap = codeBitmap.asImageBitmap(),
-                    contentDescription = "Scanned code",
-                    modifier = Modifier //.size(220.dp),
-                )
+                if (codeBitmap != null) {
+                    Image(
+                        bitmap = codeBitmap.asImageBitmap(),
+                        contentDescription = "Scanned code",
+                        modifier = Modifier,
+                    )
+                }
 
                 Text(
                     text = message,
@@ -288,6 +325,28 @@ private fun ScanResultDialog(
             }
         },
     )
+}
+
+private fun generateCodeBitmapSafely(
+    value: String,
+    type: ScannedCodeType,
+): Bitmap? {
+    if (value.isBlank()) return null
+
+    return runCatching {
+        if (type.isQr) {
+            CodeImageGenerator.generateQrBitmap(
+                value = value,
+                sizePx = 512,
+            )
+        } else {
+            CodeImageGenerator.generateBarcodeBitmap(
+                value = value,
+                widthPx = 768,
+                heightPx = 256,
+            )
+        }
+    }.getOrNull()
 }
 
 @Composable

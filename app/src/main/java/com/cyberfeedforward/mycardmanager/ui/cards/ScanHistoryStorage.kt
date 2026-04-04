@@ -76,6 +76,8 @@ class ScanHistoryStorage(
             val content = file.readText(Charsets.UTF_8).trim()
             if (content.isEmpty()) {
                 JSONArray()
+            } else if (content.startsWith("{")) {
+                JSONArray().put(JSONObject(content))
             } else {
                 JSONArray(content)
             }
