@@ -10,9 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cyberfeedforward.mycardmanager.R
 
 @Preview(showBackground = true)
 @Composable
@@ -26,21 +28,14 @@ fun AboutRoute(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
     ) {
-        Row(
-            modifier = Modifier
-                .padding(bottom = 16.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                fontSize = 36.sp,
-                text = "About",
-                style = MaterialTheme.typography.headlineSmall,
-                )
-        }
+        Text(
+            fontSize = 36.sp,
+            text = stringResource(R.string.about),
+            color = MaterialTheme.colorScheme.primary,
+        )
 
         Text(
-            modifier = Modifier.padding(bottom = 16.dp),
+            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
             fontSize = 20.sp,
             text = "Is your pocket filled with too many loyalty cards?"
                     + "\n\n"
@@ -52,5 +47,19 @@ fun AboutRoute(
                     + "\n\n"
                     + "When needed, select a card and scan it at checkout",
             )
+
+        Text(
+            fontSize = 36.sp,
+            text = stringResource(R.string.security),
+            color = MaterialTheme.colorScheme.primary,
+        )
+
+        Text(
+            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+            fontSize = 20.sp,
+            text = "Your data is stored locally. No data is collected."
+            + "\n\n"
+            + "All data will be lost when you uninstall the app",
+        )
     }
 }

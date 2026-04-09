@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -61,7 +62,14 @@ fun CardsScreen(
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Button(onClick = onScan) {
-                Text(text = "Scan")
+                Icon(
+                    imageVector = Icons.Filled.CameraAlt,
+                    contentDescription = "Scan",
+                )
+                Text(
+                    text = "Scan",
+                    modifier = Modifier.padding(start = 8.dp),
+                )
             }
         }
 
@@ -162,6 +170,7 @@ private fun SavedScanGridItem(
             Text(
                 text = scan.code,
                 style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = 6.dp),
             )
         }
     }
