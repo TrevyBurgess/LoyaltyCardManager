@@ -21,5 +21,6 @@ class TopLevelDestinationTest {
         assertTrue(labels.contains("Home"))
         assertTrue(labels.contains("Cards"))
         assertTrue(labels.contains("Settings"))
+        assertTrue(labels.contains("About"))
     }
 }

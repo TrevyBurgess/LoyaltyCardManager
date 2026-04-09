@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.cyberfeedforward.mycardmanager.ui.about.AboutRoute
 import com.cyberfeedforward.mycardmanager.ui.cards.CardsRoute
 import com.cyberfeedforward.mycardmanager.ui.home.HomeRoute
 import com.cyberfeedforward.mycardmanager.ui.settings.SettingsRoute
@@ -16,7 +17,7 @@ fun MyCardManagerNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = TopLevelDestination.Home.route,
+        startDestination = TopLevelDestination.Cards.route,
         modifier = modifier,
     ) {
         composable(route = TopLevelDestination.Home.route) {
@@ -27,6 +28,9 @@ fun MyCardManagerNavHost(
         }
         composable(route = TopLevelDestination.Settings.route) {
             SettingsRoute()
+        }
+        composable(route = TopLevelDestination.About.route) {
+            AboutRoute()
         }
     }
 }

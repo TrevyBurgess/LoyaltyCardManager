@@ -52,6 +52,9 @@ fun CardsRoute(
 
     var pendingDeleteIndex by remember { mutableStateOf<Int?>(null) }
 
+    var viewingIndex by remember { mutableStateOf<Int?>(null) }
+    var viewingScan by remember { mutableStateOf<ScanHistoryStorage.SavedScan?>(null) }
+
     LaunchedEffect(Unit) {
         savedScans = storage.readAll()
     }
@@ -98,7 +101,68 @@ fun CardsRoute(
                 pendingDeleteIndex = index
             }
         },
+        onCardClick = { index ->
+            val scan = savedScans.getOrNull(index) ?: return@CardsScreen
+            viewingIndex = index
+            viewingScan = scan
+        },
     )
+
+    if (viewingIndex != null) {
+        val scan = viewingScan
+        val codeBitmap = remember(scan?.code, scan?.type) {
+            if (scan == null) return@remember null
+            generateCodeBitmapSafely(
+                value = scan.code,
+                type = scan.type,
+            )
+        }
+
+        AlertDialog(
+            onDismissRequest = {
+                viewingIndex = null
+                viewingScan = null
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewingIndex = null
+                        viewingScan = null
+                    },
+                ) {
+                    Text(text = "OK")
+                }
+            },
+            title = {
+                Text(text = scan?.name.orEmpty())
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (scan != null && codeBitmap != null) {
+                        Image(
+                            bitmap = codeBitmap.asImageBitmap(),
+                            contentDescription = "Card code",
+                            modifier = if (scan.type.isQr) {
+                                Modifier.size(220.dp)
+                            } else {
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(120.dp)
+                            },
+                        )
+                    }
+
+                    if (scan != null) {
+                        Text(
+                            text = scan.code,
+                            fontSize = 20.sp,
+                        )
+                        Text(text = "Type: ${scan.type.label}")
+                    }
+                }
+            },
+        )
+    }
 
     if (pendingDeleteIndex != null) {
         AlertDialog(

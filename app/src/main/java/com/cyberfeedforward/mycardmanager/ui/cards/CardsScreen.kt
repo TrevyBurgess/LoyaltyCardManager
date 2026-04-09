@@ -1,5 +1,7 @@
 package com.cyberfeedforward.mycardmanager.ui.cards
 
+import android.R.attr.top
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,19 +44,20 @@ fun CardsScreen(
     onScan: () -> Unit,
     onEditScan: (index: Int) -> Unit,
     onDeleteScan: (index: Int) -> Unit,
+    onCardClick: (index: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(0.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = "Cards: ${uiState.cardCount}",
-            style = MaterialTheme.typography.headlineSmall,
-        )
+//        Text(
+//            text = "Cards: ${uiState.cardCount}",
+//            style = MaterialTheme.typography.headlineSmall,
+//        )
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Button(onClick = onScan) {
@@ -65,7 +68,8 @@ fun CardsScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f, fill = true),
+                .weight(1f, fill = true)
+                .padding(top = 30.dp, bottom = 0.dp),
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 180.dp),
@@ -81,6 +85,7 @@ fun CardsScreen(
                         scan = scan,
                         onEdit = { onEditScan(index) },
                         onDelete = { onDeleteScan(index) },
+                        onClick = { onCardClick(index) },
                     )
                 }
             }
@@ -93,14 +98,19 @@ private fun SavedScanGridItem(
     scan: ScanHistoryStorage.SavedScan,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
-    Card(modifier = modifier.fillMaxWidth()) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+    ) {
         Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(top = 0.dp, bottom = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(0.dp),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -184,6 +194,7 @@ private fun CardsScreenPreview() {
             onScan = {},
             onEditScan = {},
             onDeleteScan = {},
+            onCardClick = {},
         )
     }
 }

@@ -1,5 +1,10 @@
 package com.cyberfeedforward.mycardmanager.ui
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -14,6 +19,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.cyberfeedforward.mycardmanager.ui.navigation.MyCardManagerNavHost
 import com.cyberfeedforward.mycardmanager.ui.navigation.TopLevelDestination
 import com.cyberfeedforward.mycardmanager.ui.theme.MyCardManagerTheme
@@ -30,7 +38,11 @@ fun MainHostScreen(
         modifier = modifier,
         bottomBar = {
             NavigationBar {
-                TopLevelDestination.entries.forEach { destination ->
+                val bottomBarDestinations = listOf(
+                    TopLevelDestination.Cards,
+                    TopLevelDestination.About,
+                )
+                bottomBarDestinations.forEach { destination ->
                     val selected = currentRoute == destination.route
                     NavigationBarItem(
                         selected = selected,
@@ -57,10 +69,31 @@ fun MainHostScreen(
             }
         },
     ) { innerPadding ->
-        MyCardManagerNavHost(
-            navController = navController,
-            modifier = Modifier.padding(innerPadding),
-        )
+        Column(
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp)
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 60.dp, bottom = 10.dp),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = "My Card Manager",
+                    fontSize = 36.sp,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    )
+            }
+            
+            MyCardManagerNavHost(
+                navController = navController,
+                modifier = Modifier.padding(innerPadding),
+            )
+        }
     }
 }
 

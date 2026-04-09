@@ -20,11 +20,10 @@ Here are the commands I used for setting up the app
 * Create a responsive grid for displaying information in CardsScreen.kt. For each entry in scanned_codes.json, add an entry to the grid. The entry will contain name, a placeholder icon, and the scanned number
 * The previous caused an exception: please check for index out of bound exception
 * Add Overflow menu mutton to right of each element of the grid for showing cards
-* When a person clicks on an item in the CardsScreen page, open a popup showing the Name, QR code or bar code, and number
+* When a person clicks on an item in the CardsScreen page, open a new popup showing the Name, QR code or bar code, and number
 * Add Overflow menu mutton to right of each element of the grid for showing cards. When clicked open a popup menu. This menu will have 2 items Edit, Delete
 * When a person presses Delete, open a dialog asking for confirmation. If the user presses 'Yes', delete the record and update the UI
 * When a person presses the Edit button, open a brand new dialog. This dialog will show the image of the QR code or bar code, the number and name. The image will be determined by card type
 * Show the bar code in the edit dialog
-* 
- 
- 
+* Add a button to the navigation bar called About. When pressed open a page called About.
+* Hide the home button and settings button in the navigation bar. Start app in Cards page
