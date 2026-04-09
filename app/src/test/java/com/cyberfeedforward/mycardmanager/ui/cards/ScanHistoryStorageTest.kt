@@ -103,8 +103,8 @@ class ScanHistoryStorageTest {
                 index = 0,
                 scan = ScanHistoryStorage.SavedScan(
                     name = "New",
-                    code = "111",
-                    type = ScannedCodeType.Barcode1D,
+                    code = "222",
+                    type = ScannedCodeType.QrCode,
                 ),
             )
 
@@ -112,6 +112,8 @@ class ScanHistoryStorageTest {
             val all = storage.readAll()
             assertEquals(1, all.size)
             assertEquals("New", all[0].name)
+            assertEquals("222", all[0].code)
+            assertEquals(ScannedCodeType.QrCode, all[0].type)
         } finally {
             dir.deleteRecursively()
         }

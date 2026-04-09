@@ -8,10 +8,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,6 +51,8 @@ fun CardsRoute(
 
     var editingIndex by remember { mutableStateOf<Int?>(null) }
     var editingName by rememberSaveable { mutableStateOf("") }
+    var editingCode by rememberSaveable { mutableStateOf("") }
+    var editingTypeName by rememberSaveable { mutableStateOf(ScannedCodeType.Barcode1D.name) }
     var editingScan by remember { mutableStateOf<ScanHistoryStorage.SavedScan?>(null) }
 
     var pendingDeleteIndex by remember { mutableStateOf<Int?>(null) }
@@ -94,6 +99,8 @@ fun CardsRoute(
             val scan = savedScans.getOrNull(index) ?: return@CardsScreen
             editingIndex = index
             editingName = scan.name
+            editingCode = scan.code
+            editingTypeName = scan.type.name
             editingScan = scan
         },
         onDeleteScan = { index ->
@@ -203,17 +210,18 @@ fun CardsRoute(
 
     if (editingIndex != null) {
         val scan = editingScan
-        val codeBitmap = remember(scan?.code, scan?.type) {
-            if (scan == null) {
-                return@remember null
-
-            }
-
+        val editingType = remember(editingTypeName) {
+            ScannedCodeType.entries.firstOrNull { it.name == editingTypeName }
+                ?: ScannedCodeType.Barcode1D
+        }
+        val codeBitmap = remember(editingCode, editingType) {
+            if (editingCode.isBlank()) return@remember null
             generateCodeBitmapSafely(
-                value = scan.code,
-                type = scan.type,
+                value = editingCode,
+                type = editingType,
             )
         }
+        var isTypeMenuExpanded by remember { mutableStateOf(false) }
 
         AlertDialog(
             onDismissRequest = {
@@ -232,7 +240,11 @@ fun CardsRoute(
 
                         val updated = storage.updateAt(
                             index = index,
-                            scan = scan.copy(name = editingName),
+                            scan = scan.copy(
+                                name = editingName,
+                                code = editingCode,
+                                type = editingType,
+                            ),
                         )
                         if (updated) {
                             savedScans = storage.readAll()
@@ -263,7 +275,7 @@ fun CardsRoute(
                         Image(
                             bitmap = codeBitmap.asImageBitmap(),
                             contentDescription = "Card code",
-                            modifier = if (scan.type.isQr) {
+                            modifier = if (editingType.isQr) {
                                 Modifier.size(220.dp)
                             } else {
                                 Modifier
@@ -272,10 +284,10 @@ fun CardsRoute(
                             },
                         )
                         Text(
-                            text = scan.code,
+                            text = editingCode,
                             fontSize = 20.sp,
                         )
-                        Text(text = "Type: ${scan.type.label}")
+                        Text(text = "Type: ${editingType.label}")
                     }
 
                     OutlinedTextField(
@@ -284,6 +296,38 @@ fun CardsRoute(
                         label = { Text(text = "Card Name") },
                         singleLine = true,
                     )
+
+                    OutlinedTextField(
+                        value = editingCode,
+                        onValueChange = { editingCode = it },
+                        label = { Text(text = "Card Code") },
+                        singleLine = true,
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(text = "Type")
+                        TextButton(onClick = { isTypeMenuExpanded = true }) {
+                            Text(text = editingType.label)
+                        }
+
+                        DropdownMenu(
+                            expanded = isTypeMenuExpanded,
+                            onDismissRequest = { isTypeMenuExpanded = false },
+                        ) {
+                            ScannedCodeType.entries.forEach { type ->
+                                DropdownMenuItem(
+                                    text = { Text(text = type.label) },
+                                    onClick = {
+                                        editingTypeName = type.name
+                                        isTypeMenuExpanded = false
+                                    },
+                                )
+                            }
+                        }
+                    }
                 }
             },
         )
