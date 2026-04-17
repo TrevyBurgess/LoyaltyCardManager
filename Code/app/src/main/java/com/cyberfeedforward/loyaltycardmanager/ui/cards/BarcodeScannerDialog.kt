@@ -32,6 +32,8 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 @Composable
 fun BarcodeScannerDialog(
@@ -42,6 +44,10 @@ fun BarcodeScannerDialog(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val isInPreview = LocalInspectionMode.current
+
+    val analysisExecutor = remember {
+        CameraExecutors.newAnalysisExecutor()
+    }
 
     var previewView by remember { mutableStateOf<PreviewView?>(null) }
     var scanHandled by remember { mutableStateOf(false) }
@@ -64,6 +70,7 @@ fun BarcodeScannerDialog(
                 factory = { factoryContext ->
                     PreviewView(factoryContext).also { created ->
                         created.scaleType = PreviewView.ScaleType.FILL_CENTER
+                        created.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
                         previewView = created
                     }
                 },
@@ -86,6 +93,7 @@ fun BarcodeScannerDialog(
             },
             onError = onError,
             lifecycleOwner = lifecycleOwner,
+            analysisExecutor = analysisExecutor,
         )
     }
 
@@ -101,6 +109,8 @@ fun BarcodeScannerDialog(
                     },
                     ContextCompat.getMainExecutor(context),
                 )
+
+                runCatching { analysisExecutor.shutdownNow() }
             }
         }
     }
@@ -125,8 +135,9 @@ private fun bindCameraUseCases(
     onResult: (String, ScannedCodeType) -> Unit,
     onError: (String) -> Unit,
     lifecycleOwner: androidx.lifecycle.LifecycleOwner,
+    analysisExecutor: ExecutorService,
 ) {
-    val executor: Executor = ContextCompat.getMainExecutor(context)
+    val mainExecutor: Executor = ContextCompat.getMainExecutor(context)
     val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
     cameraProviderFuture.addListener(
@@ -142,7 +153,7 @@ private fun bindCameraUseCases(
             }
 
             val analyzer = createBarcodeAnalyzer(
-                executor = executor,
+                executor = analysisExecutor,
                 onResult = onResult,
                 onError = onError,
             )
@@ -150,7 +161,7 @@ private fun bindCameraUseCases(
             val analysis = ImageAnalysis.Builder()
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
-                .also { it.setAnalyzer(executor, analyzer) }
+                .also { it.setAnalyzer(analysisExecutor, analyzer) }
 
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
@@ -161,7 +172,7 @@ private fun bindCameraUseCases(
                 onError(ex.message ?: "Unable to start camera")
             }
         },
-        executor,
+        mainExecutor,
     )
 }
 
@@ -204,6 +215,10 @@ private fun createBarcodeAnalyzer(
                 }
         }
     }
+}
+
+internal object CameraExecutors {
+    fun newAnalysisExecutor(): ExecutorService = Executors.newSingleThreadExecutor()
 }
 
 
