@@ -288,7 +288,7 @@ fun CardsRoute(
                             text = editingCode,
                             fontSize = 20.sp,
                         )
-                        Text(text = "Type: ${editingType.label}")
+                        //Text(text = "Type: ${editingType.label}")
                     }
 
                     OutlinedTextField(
@@ -311,10 +311,14 @@ fun CardsRoute(
                     ) {
                         Text(
                             text = "Type:",
-                            modifier = Modifier.padding(top = 14.dp)
+                            modifier = Modifier.padding(top = 14.dp),
+                            fontSize = 18.sp,
                         )
                         TextButton(onClick = { isTypeMenuExpanded = true }) {
-                            Text(text = editingType.label)
+                            Text(
+                                text = editingType.label,
+                                fontSize = 18.sp,
+                            )
                         }
 
                         DropdownMenu(
