@@ -28,8 +28,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.cyberfeedforward.loyaltycardmanager.ui.theme.LoyaltyCardManagerTheme
-import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
@@ -47,6 +48,9 @@ fun BarcodeScannerDialog(
 
     val analysisExecutor = remember {
         CameraExecutors.newAnalysisExecutor()
+    }
+    val scanner = remember {
+        BarcodeScanning.getClient()
     }
 
     var previewView by remember { mutableStateOf<PreviewView?>(null) }
@@ -94,6 +98,7 @@ fun BarcodeScannerDialog(
             onError = onError,
             lifecycleOwner = lifecycleOwner,
             analysisExecutor = analysisExecutor,
+            scanner = scanner,
         )
     }
 
@@ -105,12 +110,16 @@ fun BarcodeScannerDialog(
                 val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
                 cameraProviderFuture.addListener(
                     {
-                        runCatching { cameraProviderFuture.get().unbindAll() }
+                        runCatching {
+                            val cameraProvider = cameraProviderFuture.get()
+                            cameraProvider.unbindAll()
+                        }
+                        analysisExecutor.shutdown()
                     },
                     ContextCompat.getMainExecutor(context),
                 )
 
-                runCatching { analysisExecutor.shutdownNow() }
+                runCatching { scanner.close() }
             }
         }
     }
@@ -136,6 +145,7 @@ private fun bindCameraUseCases(
     onError: (String) -> Unit,
     lifecycleOwner: androidx.lifecycle.LifecycleOwner,
     analysisExecutor: ExecutorService,
+    scanner: BarcodeScanner,
 ) {
     val mainExecutor: Executor = ContextCompat.getMainExecutor(context)
     val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -153,7 +163,8 @@ private fun bindCameraUseCases(
             }
 
             val analyzer = createBarcodeAnalyzer(
-                executor = analysisExecutor,
+                scanner = scanner,
+                mainExecutor = mainExecutor,
                 onResult = onResult,
                 onError = onError,
             )
@@ -178,12 +189,11 @@ private fun bindCameraUseCases(
 
 @SuppressLint("UnsafeOptInUsageError")
 private fun createBarcodeAnalyzer(
-    executor: Executor,
+    scanner: BarcodeScanner,
+    mainExecutor: Executor,
     onResult: (String, ScannedCodeType) -> Unit,
     onError: (String) -> Unit,
 ): ImageAnalysis.Analyzer {
-    val scanner = BarcodeScanning.getClient()
-
     return object : ImageAnalysis.Analyzer {
         override fun analyze(imageProxy: ImageProxy) {
             val mediaImage = imageProxy.image
@@ -195,7 +205,7 @@ private fun createBarcodeAnalyzer(
             val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
             scanner.process(image)
-                .addOnSuccessListener(executor) { barcodes ->
+                .addOnSuccessListener(mainExecutor) { barcodes ->
                     val first = barcodes.firstOrNull()
                     val value = first?.rawValue
                     if (!value.isNullOrBlank()) {
@@ -207,10 +217,10 @@ private fun createBarcodeAnalyzer(
                         onResult(value, type)
                     }
                 }
-                .addOnFailureListener(executor) { ex ->
+                .addOnFailureListener(mainExecutor) { ex ->
                     onError(ex.message ?: "Scan failed")
                 }
-                .addOnCompleteListener(executor) {
+                .addOnCompleteListener(mainExecutor) {
                     imageProxy.close()
                 }
         }
