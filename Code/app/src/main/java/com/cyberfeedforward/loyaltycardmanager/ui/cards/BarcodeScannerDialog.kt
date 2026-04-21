@@ -207,14 +207,16 @@ private fun createBarcodeAnalyzer(
             scanner.process(image)
                 .addOnSuccessListener(mainExecutor) { barcodes ->
                     val first = barcodes.firstOrNull()
-                    val value = first?.rawValue
-                    if (!value.isNullOrBlank()) {
-                        val type = if (first.format == Barcode.FORMAT_QR_CODE) {
-                            ScannedCodeType.QrCode
-                        } else {
-                            ScannedCodeType.Barcode1D
+                    if (first != null) {
+                        val value = first.rawValue
+                        if (!value.isNullOrBlank()) {
+                            val type = if (first.format == Barcode.FORMAT_QR_CODE) {
+                                ScannedCodeType.QrCode
+                            } else {
+                                ScannedCodeType.Barcode1D
+                            }
+                            onResult(value, type)
                         }
-                        onResult(value, type)
                     }
                 }
                 .addOnFailureListener(mainExecutor) { ex ->
