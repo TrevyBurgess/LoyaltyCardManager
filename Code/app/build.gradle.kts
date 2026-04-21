@@ -11,7 +11,7 @@ android {
         applicationId = "com.cyberfeedforward.loyaltycardmanager"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
+        versionCode = 4
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -20,10 +20,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
-            // Add this block:
-            ndk {
-                debugSymbolLevel = "FULL" // Or "SYMBOL_TABLE"
-            }
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
