@@ -1,5 +1,7 @@
 package com.cyberfeedforward.loyaltycardmanager2.ui.cards
 
+import com.cyberfeedforward.loyaltycardmanager2.ui.cards.ScanHistoryStorage
+import com.cyberfeedforward.loyaltycardmanager2.ui.cards.ScannedCodeType
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.json.JSONArray

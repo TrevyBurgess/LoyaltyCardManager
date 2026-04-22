@@ -1,5 +1,6 @@
 package com.cyberfeedforward.loyaltycardmanager2.ui.cards
 
+import com.cyberfeedforward.loyaltycardmanager2.ui.cards.CodeMatrixGenerator
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test

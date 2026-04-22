@@ -1,5 +1,7 @@
 package com.cyberfeedforward.loyaltycardmanager2.ui.cards
 
+import com.cyberfeedforward.loyaltycardmanager2.ui.cards.ScanHistoryStorage
+import com.cyberfeedforward.loyaltycardmanager2.ui.cards.ScannedCodeType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
