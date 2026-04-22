@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.cyberfeedforward.loyaltycardmanager"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.cyberfeedforward.loyaltycardmanager"

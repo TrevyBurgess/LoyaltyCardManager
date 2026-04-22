@@ -438,12 +438,12 @@ private fun ScanResultDialog(
                     )
                 }
 
-                Text(
-                    text = scannedCode,
-                    fontSize = 20.sp
-                    )
+//                Text(
+//                    text = scannedCode,
+//                    fontSize = 20.sp
+//                    )
 
-                OutlinedTextField(
+                OutlinedTextField(                    
                     value = cardName,
                     onValueChange = { cardName = it },
                     label = { Text(text = "Card Name") },
