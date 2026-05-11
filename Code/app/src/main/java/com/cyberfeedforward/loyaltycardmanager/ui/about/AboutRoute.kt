@@ -92,5 +92,22 @@ fun AboutRoute(
                     + "\n\n"
                     + "All data will be lost when you uninstall the app",
         )
+
+        Text(
+            fontSize = 36.sp,
+            text = "Fun",
+            color = MaterialTheme.colorScheme.primary,
+        )
+
+        Text(
+            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+            fontSize = 20.sp,
+            text = "This project was created to help me get familiar with Google apps."
+                    + "\n\n"
+                    + "I hope you enjoy it, and have fun :-)"
+                    + "\n\n"
+                    + "Trevy Burgess"
+                    + "\n\n",
+        )
     }
 }

@@ -277,17 +277,17 @@ fun CardsRoute(
                             bitmap = codeBitmap.asImageBitmap(),
                             contentDescription = "Card code",
                             modifier = if (editingType.isQr) {
-                                Modifier.size(220.dp)
+                                Modifier.fillMaxWidth()
                             } else {
                                 Modifier
                                     .fillMaxWidth()
-                                    .height(120.dp)
+                                    .height(100.dp)
                             },
                         )
-                        Text(
-                            text = editingCode,
-                            fontSize = 20.sp,
-                        )
+//                        Text(
+//                            text = editingCode,
+//                            fontSize = 20.sp,
+//                        )
                         //Text(text = "Type: ${editingType.label}")
                     }
 
