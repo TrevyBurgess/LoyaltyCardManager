@@ -43,26 +43,26 @@ fun CardsRoute(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val storage = remember {
-        ScanHistoryStorage(
-            file = File(context.filesDir, "scanned_codes.json"),
+    LaunchedEffect(Unit) {
+        viewModel.initStorage(
+            ScanHistoryStorage(file = File(context.filesDir, "scanned_codes.json"))
         )
     }
-    var savedScans by remember { mutableStateOf(emptyList<ScanHistoryStorage.SavedScan>()) }
 
-    var editingIndex by remember { mutableStateOf<Int?>(null) }
     var editingName by rememberSaveable { mutableStateOf("") }
     var editingCode by rememberSaveable { mutableStateOf("") }
     var editingTypeName by rememberSaveable { mutableStateOf(ScannedCodeType.Barcode1D.name) }
-    var editingScan by remember { mutableStateOf<ScanHistoryStorage.SavedScan?>(null) }
 
-    var pendingDeleteIndex by remember { mutableStateOf<Int?>(null) }
-
-    var viewingIndex by remember { mutableStateOf<Int?>(null) }
-    var viewingScan by remember { mutableStateOf<ScanHistoryStorage.SavedScan?>(null) }
-
-    LaunchedEffect(Unit) {
-        savedScans = storage.readAll()
+    LaunchedEffect(uiState.editingIndex) {
+        val index = uiState.editingIndex
+        if (index != null) {
+            val scan = uiState.savedScans.getOrNull(index)
+            if (scan != null) {
+                editingName = scan.name
+                editingCode = scan.code
+                editingTypeName = scan.type.name
+            }
+        }
     }
 
     var hasCameraPermission by remember {
@@ -86,9 +86,7 @@ fun CardsRoute(
 
     CardsScreen(
         uiState = uiState,
-        savedScans = savedScans,
-        onAddCard = viewModel::onAddCard,
-        onRemoveCard = viewModel::onRemoveCard,
+        savedScans = uiState.savedScans,
         onScan = {
             if (hasCameraPermission) {
                 viewModel.onScanRequested()
@@ -96,28 +94,13 @@ fun CardsRoute(
                 permissionLauncher.launch(Manifest.permission.CAMERA)
             }
         },
-        onEditScan = { index ->
-            val scan = savedScans.getOrNull(index) ?: return@CardsScreen
-            editingIndex = index
-            editingName = scan.name
-            editingCode = scan.code
-            editingTypeName = scan.type.name
-            editingScan = scan
-        },
-        onDeleteScan = { index ->
-            if (savedScans.getOrNull(index) != null) {
-                pendingDeleteIndex = index
-            }
-        },
-        onCardClick = { index ->
-            val scan = savedScans.getOrNull(index) ?: return@CardsScreen
-            viewingIndex = index
-            viewingScan = scan
-        },
+        onEditScan = viewModel::onEditRequested,
+        onDeleteScan = viewModel::onDeleteRequested,
+        onCardClick = viewModel::onCardClick,
     )
 
-    if (viewingIndex != null) {
-        val scan = viewingScan
+    if (uiState.viewingIndex != null) {
+        val scan = uiState.savedScans.getOrNull(uiState.viewingIndex!!)
         val codeBitmap = remember(scan?.code, scan?.type) {
             if (scan == null) return@remember null
             generateCodeBitmapSafely(
@@ -127,17 +110,9 @@ fun CardsRoute(
         }
 
         AlertDialog(
-            onDismissRequest = {
-                viewingIndex = null
-                viewingScan = null
-            },
+            onDismissRequest = viewModel::onDismissView,
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewingIndex = null
-                        viewingScan = null
-                    },
-                ) {
+                TextButton(onClick = viewModel::onDismissView) {
                     Text(text = "OK")
                 }
             },
@@ -165,38 +140,22 @@ fun CardsRoute(
                             text = scan.code,
                             fontSize = 20.sp,
                         )
-                        //Text(text = "Type-1: ${scan.type.label}")
                     }
                 }
             },
         )
     }
 
-    if (pendingDeleteIndex != null) {
+    if (uiState.pendingDeleteIndex != null) {
         AlertDialog(
-            onDismissRequest = {
-                pendingDeleteIndex = null
-            },
+            onDismissRequest = viewModel::onDismissDelete,
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        val index = pendingDeleteIndex ?: return@TextButton
-                        val deleted = storage.deleteAt(index)
-                        if (deleted) {
-                            savedScans = storage.readAll()
-                        }
-                        pendingDeleteIndex = null
-                    },
-                ) {
+                TextButton(onClick = viewModel::onConfirmDelete) {
                     Text(text = "Yes")
                 }
             },
             dismissButton = {
-                TextButton(
-                    onClick = {
-                        pendingDeleteIndex = null
-                    },
-                ) {
+                TextButton(onClick = viewModel::onDismissDelete) {
                     Text(text = "No")
                 }
             },
@@ -209,8 +168,7 @@ fun CardsRoute(
         )
     }
 
-    if (editingIndex != null) {
-        val scan = editingScan
+    if (uiState.editingIndex != null) {
         val editingType = remember(editingTypeName) {
             ScannedCodeType.entries.firstOrNull { it.name == editingTypeName }
                 ?: ScannedCodeType.Barcode1D
@@ -225,45 +183,26 @@ fun CardsRoute(
         var isTypeMenuExpanded by remember { mutableStateOf(false) }
 
         AlertDialog(
-            onDismissRequest = {
-                editingIndex = null
-                editingScan = null
-            },
+            onDismissRequest = viewModel::onDismissEdit,
             confirmButton = {
                 TextButton(
                     onClick = {
-                        val index = editingIndex ?: return@TextButton
-                        val scan = savedScans.getOrNull(index) ?: run {
-                            editingIndex = null
-                            editingScan = null
-                            return@TextButton
-                        }
-
-                        val updated = storage.updateAt(
+                        val index = uiState.editingIndex ?: return@TextButton
+                        viewModel.onSaveEdit(
                             index = index,
-                            scan = scan.copy(
+                            scan = ScanHistoryStorage.SavedScan(
                                 name = editingName,
                                 code = editingCode,
                                 type = editingType,
-                            ),
+                            )
                         )
-                        if (updated) {
-                            savedScans = storage.readAll()
-                        }
-                        editingIndex = null
-                        editingScan = null
                     }
                 ) {
                     Text(text = "Save")
                 }
             },
             dismissButton = {
-                TextButton(
-                    onClick = {
-                        editingIndex = null
-                        editingScan = null
-                    }
-                ) {
+                TextButton(onClick = viewModel::onDismissEdit) {
                     Text(text = "Cancel")
                 }
             },
@@ -272,7 +211,7 @@ fun CardsRoute(
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    if (scan != null && codeBitmap != null) {
+                    if (codeBitmap != null) {
                         Image(
                             bitmap = codeBitmap.asImageBitmap(),
                             contentDescription = "Card code",
@@ -284,11 +223,6 @@ fun CardsRoute(
                                     .height(100.dp)
                             },
                         )
-//                        Text(
-//                            text = editingCode,
-//                            fontSize = 20.sp,
-//                        )
-                        //Text(text = "Type: ${editingType.label}")
                     }
 
                     OutlinedTextField(
@@ -357,9 +291,6 @@ fun CardsRoute(
                     viewModel = viewModel,
                     message = scanResult.value,
                     type = scanResult.type,
-                    onSaved = {
-                        savedScans = storage.readAll()
-                    },
                 )
             }
             is ScanResultUi.Error -> {
@@ -374,9 +305,7 @@ private fun ScanResultDialog(
     viewModel: CardsViewModel,
     message: String,
     type: ScannedCodeType,
-    onSaved: () -> Unit,
 ) {
-    val context = LocalContext.current
     var cardName by rememberSaveable { mutableStateOf("") }
     var scannedCode by rememberSaveable(message) { mutableStateOf(message) }
     var scannedTypeName by rememberSaveable(type) { mutableStateOf(type.name) }
@@ -399,18 +328,13 @@ private fun ScanResultDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val storage = ScanHistoryStorage(
-                        file = File(context.filesDir, "scanned_codes.json"),
-                    )
-                    storage.append(
+                    viewModel.onSaveNewScan(
                         ScanHistoryStorage.SavedScan(
                             name = cardName,
                             code = scannedCode,
                             type = scannedType,
                         )
                     )
-                    onSaved()
-                    viewModel.onScanResultDismissed()
                 },
             ) {
                 Text(text = "Save")
@@ -429,7 +353,7 @@ private fun ScanResultDialog(
                         bitmap = codeBitmap.asImageBitmap(),
                         contentDescription = "Scanned code",
                         modifier = if (scannedType.isQr) {
-                            Modifier.size(220.dp)
+                            Modifier.fillMaxWidth()
                         } else {
                             Modifier
                                 .fillMaxWidth()
@@ -437,11 +361,6 @@ private fun ScanResultDialog(
                         },
                     )
                 }
-
-//                Text(
-//                    text = scannedCode,
-//                    fontSize = 20.sp
-//                    )
 
                 OutlinedTextField(                    
                     value = cardName,

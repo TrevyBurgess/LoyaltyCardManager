@@ -39,8 +39,6 @@ import androidx.compose.runtime.setValue
 fun CardsScreen(
     uiState: CardsUiState,
     savedScans: List<ScanHistoryStorage.SavedScan>,
-    onAddCard: () -> Unit,
-    onRemoveCard: () -> Unit,
     onScan: () -> Unit,
     onEditScan: (index: Int) -> Unit,
     onDeleteScan: (index: Int) -> Unit,
@@ -55,7 +53,7 @@ fun CardsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 //        Text(
-//            text = "Cards: ${uiState.cardCount}",
+//            text = "Cards: ${savedScans.size}",
 //            style = MaterialTheme.typography.headlineSmall,
 //        )
 
@@ -185,7 +183,6 @@ private fun CardsScreenPreview() {
     LoyaltyCardManagerTheme {
         CardsScreen(
             uiState = CardsUiState(
-                cardCount = 3,
                 isScannerVisible = false,
                 scanResult = null,
             ),
@@ -201,8 +198,6 @@ private fun CardsScreenPreview() {
                     type = ScannedCodeType.QrCode,
                 ),
             ),
-            onAddCard = {},
-            onRemoveCard = {},
             onScan = {},
             onEditScan = {},
             onDeleteScan = {},

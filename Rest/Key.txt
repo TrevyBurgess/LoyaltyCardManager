@@ -1,0 +1,3 @@
+Password stored in the Password.docx file, under Android Apps.
+
+Key is in: G:\My Drive\_GitHub\Private-Docs\Keys\AndroidApps\AppKey.jks

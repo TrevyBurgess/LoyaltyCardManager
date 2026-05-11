@@ -116,11 +116,11 @@ fun BarcodeScannerDialog(
                             val cameraProvider = cameraProviderFuture.get()
                             cameraProvider.unbindAll()
                         }
-                        analysisExecutor?.shutdown()
                     },
                     ContextCompat.getMainExecutor(context),
                 )
 
+                analysisExecutor?.shutdown()
                 runCatching { scanner?.close() }
             }
         }

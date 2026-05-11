@@ -12,41 +12,11 @@ import org.junit.Test
 class CardsViewModelTest {
 
     @Test
-    fun initialState_cardCountIsZero() {
+    fun initialState_isEmpty() {
         val viewModel = CardsViewModel()
-        assertEquals(0, viewModel.uiState.value.cardCount)
+        assertTrue(viewModel.uiState.value.savedScans.isEmpty())
         assertFalse(viewModel.uiState.value.isScannerVisible)
         assertNull(viewModel.uiState.value.scanResult)
-    }
-
-    @Test
-    fun onAddCard_incrementsCount() {
-        val viewModel = CardsViewModel()
-
-        viewModel.onAddCard()
-        viewModel.onAddCard()
-
-        assertEquals(2, viewModel.uiState.value.cardCount)
-    }
-
-    @Test
-    fun onRemoveCard_whenZero_doesNotGoNegative() {
-        val viewModel = CardsViewModel()
-
-        viewModel.onRemoveCard()
-
-        assertEquals(0, viewModel.uiState.value.cardCount)
-    }
-
-    @Test
-    fun onRemoveCard_whenPositive_decrementsCount() {
-        val viewModel = CardsViewModel()
-
-        viewModel.onAddCard()
-        viewModel.onAddCard()
-        viewModel.onRemoveCard()
-
-        assertEquals(1, viewModel.uiState.value.cardCount)
     }
 
     @Test
@@ -107,5 +77,3 @@ class CardsViewModelTest {
         assertNull(viewModel.uiState.value.scanResult)
     }
 }
-
-

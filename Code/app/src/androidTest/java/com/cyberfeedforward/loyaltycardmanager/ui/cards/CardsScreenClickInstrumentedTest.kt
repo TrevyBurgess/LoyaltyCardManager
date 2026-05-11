@@ -24,7 +24,6 @@ class CardsScreenClickInstrumentedTest {
 
             CardsScreen(
                 uiState = CardsUiState(
-                    cardCount = 0,
                     isScannerVisible = false,
                     scanResult = null,
                 ),
@@ -35,8 +34,6 @@ class CardsScreenClickInstrumentedTest {
                         type = ScannedCodeType.Barcode1D,
                     ),
                 ),
-                onAddCard = {},
-                onRemoveCard = {},
                 onScan = {},
                 onEditScan = {},
                 onDeleteScan = {},
