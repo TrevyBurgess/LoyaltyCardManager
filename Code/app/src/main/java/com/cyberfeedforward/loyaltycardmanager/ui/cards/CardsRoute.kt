@@ -248,25 +248,28 @@ fun CardsRoute(
                             modifier = Modifier.padding(top = 14.dp),
                             fontSize = 18.sp,
                         )
-                        TextButton(onClick = { isTypeMenuExpanded = true }) {
-                            Text(
-                                text = editingType.label,
-                                fontSize = 18.sp,
-                            )
-                        }
 
-                        DropdownMenu(
-                            expanded = isTypeMenuExpanded,
-                            onDismissRequest = { isTypeMenuExpanded = false },
-                        ) {
-                            ScannedCodeType.entries.forEach { type ->
-                                DropdownMenuItem(
-                                    text = { Text(text = type.label) },
-                                    onClick = {
-                                        editingTypeName = type.name
-                                        isTypeMenuExpanded = false
-                                    },
+                        Column() {
+                            TextButton(onClick = { isTypeMenuExpanded = true }) {
+                                Text(
+                                    text = editingType.label,
+                                    fontSize = 18.sp,
                                 )
+                            }
+
+                            DropdownMenu(
+                                expanded = isTypeMenuExpanded,
+                                onDismissRequest = { isTypeMenuExpanded = false },
+                            ) {
+                                ScannedCodeType.entries.forEach { type ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = type.label) },
+                                        onClick = {
+                                            editingTypeName = type.name
+                                            isTypeMenuExpanded = false
+                                        },
+                                    )
+                                }
                             }
                         }
                     }
