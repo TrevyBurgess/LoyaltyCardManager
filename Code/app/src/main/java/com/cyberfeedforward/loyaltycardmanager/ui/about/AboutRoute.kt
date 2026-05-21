@@ -88,9 +88,7 @@ fun AboutRoute(
         Text(
             modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
             fontSize = 20.sp,
-            text = "Your card info is stored on your phone. No data is collected."
-                    + "\n\n"
-                    + "All data will be lost when you uninstall the app",
+            text = "Your card info is stored on your phone. No data is collected.",
         )
 
         Text(

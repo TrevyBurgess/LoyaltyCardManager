@@ -181,11 +181,14 @@ fun CardsRoute(
             )
         }
         var isTypeMenuExpanded by remember { mutableStateOf(false) }
+        val isNameError = editingName.isBlank()
+        val isCodeError = editingCode.isBlank()
 
         AlertDialog(
             onDismissRequest = viewModel::onDismissEdit,
             confirmButton = {
                 TextButton(
+                    enabled = !isNameError && !isCodeError,
                     onClick = {
                         val index = uiState.editingIndex ?: return@TextButton
                         viewModel.onSaveEdit(
@@ -228,14 +231,16 @@ fun CardsRoute(
                     OutlinedTextField(
                         value = editingName,
                         onValueChange = { editingName = it },
-                        label = { Text(text = "Card Name") },
+                        label = { Text(text = "Card Name *") },
+                        isError = isNameError,
                         singleLine = true,
                     )
 
                     OutlinedTextField(
                         value = editingCode,
                         onValueChange = { editingCode = it },
-                        label = { Text(text = "Card Code") },
+                        label = { Text(text = "Card Code *") },
+                        isError = isCodeError,
                         singleLine = true,
                     )
 
@@ -317,6 +322,8 @@ private fun ScanResultDialog(
             ?: ScannedCodeType.Barcode1D
     }
     var isTypeMenuExpanded by remember { mutableStateOf(false) }
+    val isNameError = cardName.isBlank()
+    val isCodeError = scannedCode.isBlank()
 
     val codeBitmap = remember(scannedCode, scannedType) {
         if (scannedCode.isBlank()) return@remember null
@@ -330,6 +337,7 @@ private fun ScanResultDialog(
         onDismissRequest = viewModel::onScanResultDismissed,
         confirmButton = {
             TextButton(
+                enabled = !isNameError && !isCodeError,
                 onClick = {
                     viewModel.onSaveNewScan(
                         ScanHistoryStorage.SavedScan(
@@ -365,18 +373,20 @@ private fun ScanResultDialog(
                     )
                 }
 
-                OutlinedTextField(                    
+                OutlinedTextField(
                     value = cardName,
                     onValueChange = { cardName = it },
-                    label = { Text(text = "Card Name") },
+                    label = { Text(text = "Card Name *") },
                     placeholder = { Text(text = "What is your Card Name?") },
+                    isError = isNameError,
                     singleLine = true,
                 )
 
                 OutlinedTextField(
                     value = scannedCode,
                     onValueChange = { scannedCode = it },
-                    label = { Text(text = "Card Code") },
+                    label = { Text(text = "Card Code *") },
+                    isError = isCodeError,
                     singleLine = true,
                 )
 
