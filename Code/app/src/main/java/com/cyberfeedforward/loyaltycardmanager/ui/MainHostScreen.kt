@@ -24,10 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cyberfeedforward.loyaltycardmanager.ui.navigation.LoyaltyCardManagerNavHost
 import com.cyberfeedforward.loyaltycardmanager.ui.navigation.TopLevelDestination
+import com.cyberfeedforward.loyaltycardmanager.ui.settings.SettingsViewModel
 import com.cyberfeedforward.loyaltycardmanager.ui.theme.LoyaltyCardManagerTheme
 
 @Composable
 fun MainHostScreen(
+    settingsViewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
@@ -40,6 +42,7 @@ fun MainHostScreen(
             NavigationBar {
                 val bottomBarDestinations = listOf(
                     TopLevelDestination.Cards,
+                    TopLevelDestination.Settings,
                     TopLevelDestination.About,
                 )
                 bottomBarDestinations.forEach { destination ->
@@ -91,6 +94,7 @@ fun MainHostScreen(
 
             LoyaltyCardManagerNavHost(
                 navController = navController,
+                settingsViewModel = settingsViewModel,
                 modifier = Modifier.padding(innerPadding),
             )
         }
@@ -112,7 +116,9 @@ private fun NavigationIcon(
 @Composable
 private fun MainHostScreenPreview() {
     LoyaltyCardManagerTheme {
-        MainHostScreen()
+        // Preview can't easily create a real ViewModel with Application
+        // In a real app we might use a mock or a provider
+        Text("MainHostScreen Preview")
     }
 }
 

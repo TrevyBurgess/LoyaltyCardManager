@@ -9,10 +9,12 @@ import com.cyberfeedforward.loyaltycardmanager.ui.about.AboutRoute
 import com.cyberfeedforward.loyaltycardmanager.ui.cards.CardsRoute
 import com.cyberfeedforward.loyaltycardmanager.ui.home.HomeRoute
 import com.cyberfeedforward.loyaltycardmanager.ui.settings.SettingsRoute
+import com.cyberfeedforward.loyaltycardmanager.ui.settings.SettingsViewModel
 
 @Composable
 fun LoyaltyCardManagerNavHost(
     navController: NavHostController,
+    settingsViewModel: SettingsViewModel,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -27,7 +29,7 @@ fun LoyaltyCardManagerNavHost(
             CardsRoute()
         }
         composable(route = TopLevelDestination.Settings.route) {
-            SettingsRoute()
+            SettingsRoute(viewModel = settingsViewModel)
         }
         composable(route = TopLevelDestination.About.route) {
             AboutRoute()

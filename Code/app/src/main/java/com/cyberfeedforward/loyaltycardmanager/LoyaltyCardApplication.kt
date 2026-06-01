@@ -1,7 +1,7 @@
 package com.cyberfeedforward.loyaltycardmanager
 
 import android.app.Application
-import android.util.Log
+import com.cyberfeedforward.loyaltycardmanager.util.Logger
 import kotlin.system.exitProcess
 
 class LoyaltyCardApplication : Application() {
@@ -16,8 +16,7 @@ class LoyaltyCardApplication : Application() {
 
     private fun handleUncaughtException(thread: Thread, throwable: Throwable) {
         // Log the crash details
-        Log.e("LoyaltyCardApp", "CRASH DETECTED on thread ${thread.name}")
-        Log.e("LoyaltyCardApp", throwable.stackTraceToString())
+        Logger.e("CRASH DETECTED on thread ${thread.name}", throwable)
 
         // In a real app, you might send this to a backend like Firebase Crashlytics here.
         // For local tracing, the Log.e output will be captured in Logcat and visible 

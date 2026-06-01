@@ -1,5 +1,6 @@
 package com.cyberfeedforward.loyaltycardmanager.ui.cards
 
+import com.cyberfeedforward.loyaltycardmanager.util.Logger
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -81,7 +82,8 @@ class ScanHistoryStorage(
             } else {
                 JSONArray(content)
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Logger.e("Failed to read scan history", e)
             JSONArray()
         }
     }
