@@ -4,11 +4,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,7 +28,7 @@ import com.cyberfeedforward.loyaltycardmanager.ui.theme.LoyaltyCardManagerTheme
 @Composable
 fun SettingsScreen(
     uiState: SettingsUiState,
-    onToggleDarkMode: () -> Unit,
+    onThemeModeChanged: (ThemeMode) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -33,16 +43,60 @@ fun SettingsScreen(
             style = MaterialTheme.typography.headlineSmall,
         )
 
-        Row(
+        Column(
             modifier = Modifier.padding(top = 24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(text = "Dark mode")
-            Switch(
-                checked = uiState.darkModeEnabled,
-                onCheckedChange = { onToggleDarkMode() },
+            Text(text = "Theme Mode")
+            ThemeModeComboBox(
+                selectedMode = uiState.themeMode,
+                onModeSelected = onThemeModeChanged,
             )
+        }
+    }
+}
+
+@Composable
+fun ThemeModeComboBox(
+    selectedMode: ThemeMode,
+    onModeSelected: (ThemeMode) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column {
+        OutlinedCard(
+            onClick = { expanded = true },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(text = selectedMode.name)
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth(0.9f) // Adjust width to match card roughly
+        ) {
+            ThemeMode.entries.forEach { mode ->
+                DropdownMenuItem(
+                    text = { Text(mode.name) },
+                    onClick = {
+                        onModeSelected(mode)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }
@@ -52,8 +106,8 @@ fun SettingsScreen(
 private fun SettingsScreenPreview() {
     LoyaltyCardManagerTheme {
         SettingsScreen(
-            uiState = SettingsUiState(darkModeEnabled = true),
-            onToggleDarkMode = {},
+            uiState = SettingsUiState(themeMode = ThemeMode.Dark),
+            onThemeModeChanged = {},
         )
     }
 }

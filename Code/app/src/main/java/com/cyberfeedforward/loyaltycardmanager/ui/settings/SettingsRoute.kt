@@ -13,7 +13,7 @@ fun SettingsRoute(
 
     SettingsScreen(
         uiState = uiState,
-        onToggleDarkMode = viewModel::onToggleDarkMode,
+        onThemeModeChanged = viewModel::onThemeModeChanged,
     )
 }
 

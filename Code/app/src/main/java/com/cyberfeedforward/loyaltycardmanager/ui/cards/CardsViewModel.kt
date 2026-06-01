@@ -1,6 +1,7 @@
 package com.cyberfeedforward.loyaltycardmanager.ui.cards
 
 import androidx.lifecycle.ViewModel
+import com.cyberfeedforward.loyaltycardmanager.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,6 +55,7 @@ class CardsViewModel : ViewModel() {
     }
 
     fun onScanError(message: String) {
+        Logger.e("Scan error: $message")
         _uiState.value = _uiState.value.copy(
             isScannerVisible = false,
             scanResult = ScanResultUi.Error(message = message),
@@ -90,20 +92,27 @@ class CardsViewModel : ViewModel() {
 
     fun onConfirmDelete() {
         val index = _uiState.value.pendingDeleteIndex ?: return
+        Logger.i("Deleting card at index $index")
         if (storage?.deleteAt(index) == true) {
             loadScans()
+        } else {
+            Logger.e("Failed to delete card at index $index")
         }
         _uiState.value = _uiState.value.copy(pendingDeleteIndex = null)
     }
 
     fun onSaveEdit(index: Int, scan: ScanHistoryStorage.SavedScan) {
+        Logger.i("Saving edit for card at index $index")
         if (storage?.updateAt(index, scan) == true) {
             loadScans()
+        } else {
+            Logger.e("Failed to update card at index $index")
         }
         _uiState.value = _uiState.value.copy(editingIndex = null)
     }
 
     fun onSaveNewScan(scan: ScanHistoryStorage.SavedScan) {
+        Logger.i("Saving new scanned card: ${scan.name}")
         storage?.append(scan)
         loadScans()
         onScanResultDismissed()

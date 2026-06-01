@@ -1,20 +1,48 @@
 package com.cyberfeedforward.loyaltycardmanager.ui.settings
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.cyberfeedforward.loyaltycardmanager.util.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+enum class ThemeMode {
+    Light,
+    Dark,
+    System
+}
+
 data class SettingsUiState(
-    val darkModeEnabled: Boolean,
+    val themeMode: ThemeMode = ThemeMode.System,
 )
 
-class SettingsViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(SettingsUiState(darkModeEnabled = false))
+class SettingsViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
+    private val _uiState = MutableStateFlow(
+        SettingsUiState(
+            themeMode = runCatching {
+                val modeName = sharedPreferences.getString("theme_mode", ThemeMode.System.name)
+                ThemeMode.valueOf(modeName ?: ThemeMode.System.name)
+            }.onFailure { Logger.e("Failed to load theme mode", it) }
+                .getOrDefault(ThemeMode.System)
+        )
+    )
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
-    fun onToggleDarkMode() {
-        _uiState.value = _uiState.value.copy(darkModeEnabled = !_uiState.value.darkModeEnabled)
+    fun onThemeModeChanged(mode: ThemeMode) {
+        sharedPreferences.edit().putString("theme_mode", mode.name).apply()
+        _uiState.value = _uiState.value.copy(themeMode = mode)
+    }
+
+    class Factory(private val sharedPreferences: SharedPreferences) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return SettingsViewModel(sharedPreferences) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
     }
 }
 

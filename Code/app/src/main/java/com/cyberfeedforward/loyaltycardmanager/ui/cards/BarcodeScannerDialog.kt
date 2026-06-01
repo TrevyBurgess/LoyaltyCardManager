@@ -28,6 +28,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.cyberfeedforward.loyaltycardmanager.ui.theme.LoyaltyCardManagerTheme
+import com.cyberfeedforward.loyaltycardmanager.util.Logger
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -115,13 +116,14 @@ fun BarcodeScannerDialog(
                         runCatching {
                             val cameraProvider = cameraProviderFuture.get()
                             cameraProvider.unbindAll()
-                        }
+                        }.onFailure { Logger.e("Failed to unbind camera", it) }
                     },
                     ContextCompat.getMainExecutor(context),
                 )
 
                 analysisExecutor?.shutdown()
                 runCatching { scanner?.close() }
+                    .onFailure { Logger.e("Failed to close scanner", it) }
             }
         }
     }
@@ -155,6 +157,7 @@ private fun bindCameraUseCases(
     cameraProviderFuture.addListener(
         {
             val cameraProvider = runCatching { cameraProviderFuture.get() }
+                .onFailure { Logger.e("Failed to get camera provider", it) }
                 .getOrElse { ex ->
                     onError(ex.message ?: "Unable to open camera")
                     return@addListener
@@ -182,6 +185,7 @@ private fun bindCameraUseCases(
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, analysis)
             }.onFailure { ex ->
+                Logger.e("Failed to bind camera use cases", ex)
                 onError(ex.message ?: "Unable to start camera")
             }
         },
@@ -222,6 +226,7 @@ private fun createBarcodeAnalyzer(
                     }
                 }
                 .addOnFailureListener(mainExecutor) { ex ->
+                    Logger.e("ML Kit Scan failed", ex)
                     onError(ex.message ?: "Scan failed")
                 }
                 .addOnCompleteListener(mainExecutor) {

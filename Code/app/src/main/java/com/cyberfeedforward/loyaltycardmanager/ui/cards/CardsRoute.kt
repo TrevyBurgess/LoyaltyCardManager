@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cyberfeedforward.loyaltycardmanager.util.Logger
 import java.io.File
 
 @Composable
@@ -438,7 +439,8 @@ private fun generateCodeBitmapSafely(
                 heightPx = 256,
             )
         }
-    }.getOrNull()
+    }.onFailure { Logger.e("Failed to generate bitmap for $type", it) }
+        .getOrNull()
 }
 
 @Composable
