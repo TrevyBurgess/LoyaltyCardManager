@@ -26,7 +26,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -279,6 +281,18 @@ fun CardsRoute(
                             }
                         }
                     }
+
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Note: ",
+                            color = Red,
+                            fontSize = 18.sp
+                        )
+                        Text(text = "Verify card Code before saving")
+                    }
                 }
             },
         )
@@ -414,6 +428,18 @@ private fun ScanResultDialog(
                             )
                         }
                     }
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Note: ",
+                        color = Red,
+                        fontSize = 18.sp
+                    )
+                    Text(text = "Verify Card Code before saving")
                 }
             }
         },
