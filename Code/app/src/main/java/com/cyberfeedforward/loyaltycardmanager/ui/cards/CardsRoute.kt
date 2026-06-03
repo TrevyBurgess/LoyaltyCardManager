@@ -7,11 +7,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
@@ -235,6 +235,7 @@ fun CardsRoute(
                         value = editingName,
                         onValueChange = { editingName = it },
                         label = { Text(text = "Card Name *") },
+                        placeholder = { Text(text = "What is your Card Name?") },
                         isError = isNameError,
                         singleLine = true,
                     )
@@ -243,6 +244,7 @@ fun CardsRoute(
                         value = editingCode,
                         onValueChange = { editingCode = it },
                         label = { Text(text = "Card Code *") },
+                        placeholder = { Text(text = "What is your Card Code?") },
                         isError = isCodeError,
                         singleLine = true,
                     )
@@ -250,14 +252,14 @@ fun CardsRoute(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = "Type:",
-                            modifier = Modifier.padding(top = 14.dp),
                             fontSize = 18.sp,
                         )
 
-                        Column() {
+                        Box {
                             TextButton(onClick = { isTypeMenuExpanded = true }) {
                                 Text(
                                     text = editingType.label,
@@ -291,7 +293,7 @@ fun CardsRoute(
                             color = Red,
                             fontSize = 18.sp
                         )
-                        Text(text = "Verify card Code before saving")
+                        Text(text = "Verify Card Code before saving")
                     }
                 }
             },
@@ -401,6 +403,7 @@ private fun ScanResultDialog(
                     value = scannedCode,
                     onValueChange = { scannedCode = it },
                     label = { Text(text = "Card Code *") },
+                    placeholder = { Text(text = "What is your Card Code?") },
                     isError = isCodeError,
                     singleLine = true,
                 )
@@ -408,24 +411,33 @@ private fun ScanResultDialog(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Type")
-                    TextButton(onClick = { isTypeMenuExpanded = true }) {
-                        Text(text = scannedType.label)
-                    }
-
-                    DropdownMenu(
-                        expanded = isTypeMenuExpanded,
-                        onDismissRequest = { isTypeMenuExpanded = false },
-                    ) {
-                        ScannedCodeType.entries.forEach { option ->
-                            DropdownMenuItem(
-                                text = { Text(text = option.label) },
-                                onClick = {
-                                    scannedTypeName = option.name
-                                    isTypeMenuExpanded = false
-                                },
+                    Text(
+                        text = "Type",
+                        fontSize = 18.sp
+                    )
+                    Box {
+                        TextButton(onClick = { isTypeMenuExpanded = true }) {
+                            Text(
+                                text = scannedType.label,
+                                fontSize = 18.sp
                             )
+                        }
+
+                        DropdownMenu(
+                            expanded = isTypeMenuExpanded,
+                            onDismissRequest = { isTypeMenuExpanded = false },
+                        ) {
+                            ScannedCodeType.entries.forEach { option ->
+                                DropdownMenuItem(
+                                    text = { Text(text = option.label) },
+                                    onClick = {
+                                        scannedTypeName = option.name
+                                        isTypeMenuExpanded = false
+                                    },
+                                )
+                            }
                         }
                     }
                 }

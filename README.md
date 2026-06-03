@@ -10,6 +10,10 @@ Here are the commands I used for setting up the app
 
 - Create a multi-page Android app using Kotlin, Jetpack Compose, and the MVVM design pattern. Use stateless composable. Create a master page for hosting all other pages. The bottom of this page will include a navigation bar. All pages will be hosted here.
 - Include @Preview methods for all app pages
+- Hide the home button and settings button in the navigation bar. Start app in Cards page
+
+## Cards
+
 - Add a button to the CardsScreen page. When clicked, it will use the camera to scan a QR code or bar code. A popup window will show the scanned QR code or bar code to the user.
 - Manual change: Scan result is moved to success (ScanResultDialog) and fail (ScanFailDialog) methods
 - Add the image of the bar code or QR code to the dialog in ScanResultDialog
@@ -25,10 +29,15 @@ Here are the commands I used for setting up the app
 - When a person presses Delete, open a dialog asking for confirmation. If the user presses 'Yes', delete the record and update the UI
 - When a person presses the Edit button, open a brand new dialog. This dialog will show the image of the QR code or bar code, the number and name. The image will be determined by card type
 - Show the bar code in the edit dialog
-- Add a button to the navigation bar called About. When pressed open a page called About.
-- Hide the home button and settings button in the navigation bar. Start app in Cards page
 - When a user presses the Edit button, allow a user to edit the QR code or bar code
 - When a user scans a new QR code, allow a user to edit the QR code or bar code
-
 - Add logging to log all errors
+- On the Scanned Card dialog, the Type dropdown is shifting position when a user opens dropdown. Also, align the menu below the text
 
+## Settings
+
+## About
+
+- Add a button to the navigation bar called About. When pressed open a page called About.
+- Add feature_graphic.png to the About screen
+- Make the image 50% when on a tablet
