@@ -34,6 +34,8 @@ import com.cyberfeedforward.loyaltycardmanager.ui.theme.LoyaltyCardManagerTheme
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun CardsScreen(
@@ -68,6 +70,33 @@ fun CardsScreen(
                     modifier = Modifier.padding(start = 8.dp),
                 )
             }
+        }
+
+        if (savedScans.isEmpty()) {
+            Text(
+                text = "Click on Scan Button",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 18.sp,
+                modifier = Modifier.padding(top = 40.dp),
+            )
+
+            Text(
+                text = "Point at your card",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 18.sp,
+            )
+
+            Text(
+                text = "Enjoy",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 18.sp,
+            )
+
+            Text(
+                text = "\uD83D\uDE01",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 30.sp,
+            )
         }
 
         Box(
