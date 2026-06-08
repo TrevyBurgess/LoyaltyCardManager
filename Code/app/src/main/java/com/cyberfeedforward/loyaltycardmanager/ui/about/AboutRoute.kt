@@ -68,6 +68,24 @@ fun AboutRoute(
                         + "At checkout, select a loyalty card and scan it.",
             )
 
+
+
+
+
+            Text(
+                fontSize = 36.sp,
+                text = stringResource(R.string.security),
+                color = MaterialTheme.colorScheme.primary,
+            )
+
+            Text(
+                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+                fontSize = 20.sp,
+                text = "Your card info is stored on your phone."
+                       + "\n\n"
+                       + "We will never ask for your data.",
+            )
+
             Text(
                 fontSize = 36.sp,
                 text = "Managing Cards",
@@ -94,18 +112,6 @@ fun AboutRoute(
                         + "However, sometimes it returns some strange characters."
                         + "\n\n"
                         + "Please make sure the card code is correct."
-            )
-
-            Text(
-                fontSize = 36.sp,
-                text = stringResource(R.string.security),
-                color = MaterialTheme.colorScheme.primary,
-            )
-
-            Text(
-                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
-                fontSize = 20.sp,
-                text = "Your card info is stored on your phone. No data is collected.",
             )
 
             Text(
