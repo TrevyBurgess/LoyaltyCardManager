@@ -65,12 +65,10 @@ fun AboutRoute(
                         + "\n\n"
                         + "With Loyalty Card Manager, you just scan a loyalty card and add it to your list of cards."
                         + "\n\n"
-                        + "At checkout, select a loyalty card and scan it.",
+                        + "At checkout, select a loyalty card and scan it."
+                        + "\n\n"
+                        + "- This app is forever free - no ads.",
             )
-
-
-
-
 
             Text(
                 fontSize = 36.sp,

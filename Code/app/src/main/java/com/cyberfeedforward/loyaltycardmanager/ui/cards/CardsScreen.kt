@@ -87,6 +87,12 @@ fun CardsScreen(
             )
 
             Text(
+                text = "Scan at checkout",
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 18.sp,
+            )
+
+            Text(
                 text = "Enjoy",
                 style = MaterialTheme.typography.bodyLarge,
                 fontSize = 18.sp,
