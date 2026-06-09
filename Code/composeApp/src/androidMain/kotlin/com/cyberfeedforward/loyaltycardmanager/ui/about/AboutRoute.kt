@@ -12,7 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,7 +67,7 @@ fun AboutRoute(
                         + "\n\n"
                         + "At checkout, select a loyalty card and scan it."
                         + "\n\n"
-                        + "- This app is forever free - no ads.",
+                        + "- This app is forever free - no ads. \uD83E\uDD70",
             )
 
             Text(
@@ -113,15 +118,32 @@ fun AboutRoute(
                 color = MaterialTheme.colorScheme.primary,
             )
 
+            val annotatedString = buildAnnotatedString {
+                append("This project was created to help me get familiar with Google and iOS app development.")
+                append("\n\n")
+                append("I hope you enjoy it, and have fun \uD83D\uDE01")
+                append("\n\n")
+                append("This project is hosted on GitHub: ")
+                withLink(
+                    LinkAnnotation.Url(
+                        "https://github.com/TrevyBurgess/LoyaltyCardManager",
+                        TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline))
+                    )
+                ) {
+                    append("LoyaltyCardManager")
+                }
+            }
+
             Text(
                 modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+                text = annotatedString,
+                fontSize = 20.sp
+            )
+
+            Text(
+                modifier = Modifier.padding(top = 16.dp, bottom = 64.dp),
                 fontSize = 20.sp,
-                text = "This project was created to help me get familiar with Google apps."
-                        + "\n\n"
-                        + "I hope you enjoy it, and have fun :-)"
-                        + "\n\n"
-                        + "Trevy Burgess"
-                        + "\n\n",
+                text = "Trevy Burgess",
             )
         }
     }
