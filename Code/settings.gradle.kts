@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "LoyaltyCardManager"
 include(":app")
+include(":composeApp")

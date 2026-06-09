@@ -37,7 +37,7 @@ enum class TopLevelDestination(
     ),
     About(
         route = "about",
-        label = "About",
+        label = "Help",
         selectedIcon = Icons.Filled.Info,
         unselectedIcon = Icons.Outlined.Info,
     ),

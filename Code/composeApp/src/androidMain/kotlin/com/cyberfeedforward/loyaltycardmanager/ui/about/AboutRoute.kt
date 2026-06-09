@@ -1,11 +1,9 @@
 package com.cyberfeedforward.loyaltycardmanager.ui.about
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,14 +12,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cyberfeedforward.loyaltycardmanager.R
+// import com.loyaltycard.shared.R
 
 @Preview(showBackground = true)
 @Composable
@@ -40,7 +40,7 @@ fun AboutRoute(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
         ) {
-            Image(
+            /*Image(
                 painter = painterResource(id = R.drawable.feature_graphic),
                 contentDescription = null,
                 modifier = Modifier
@@ -48,11 +48,11 @@ fun AboutRoute(
                     .align(Alignment.CenterHorizontally)
                     .padding(bottom = 16.dp),
                 contentScale = ContentScale.FillWidth,
-            )
+            )*/
 
             Text(
                 fontSize = 36.sp,
-                text = stringResource(R.string.about),
+                text = "About", //stringResource(R.string.about),
                 color = MaterialTheme.colorScheme.primary,
             )
 
@@ -67,12 +67,12 @@ fun AboutRoute(
                         + "\n\n"
                         + "At checkout, select a loyalty card and scan it."
                         + "\n\n"
-                        + "- This app is forever free - no ads.",
+                        + "- This app is forever free - no ads. \uD83E\uDD70",
             )
 
             Text(
                 fontSize = 36.sp,
-                text = stringResource(R.string.security),
+                text = "Security", //stringResource(R.string.security),
                 color = MaterialTheme.colorScheme.primary,
             )
 
@@ -118,15 +118,32 @@ fun AboutRoute(
                 color = MaterialTheme.colorScheme.primary,
             )
 
+            val annotatedString = buildAnnotatedString {
+                append("This project was created to help me get familiar with Google and iOS app development.")
+                append("\n\n")
+                append("I hope you enjoy it, and have fun \uD83D\uDE01")
+                append("\n\n")
+                append("This project is hosted on GitHub: ")
+                withLink(
+                    LinkAnnotation.Url(
+                        "https://github.com/TrevyBurgess/LoyaltyCardManager",
+                        TextLinkStyles(style = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline))
+                    )
+                ) {
+                    append("LoyaltyCardManager")
+                }
+            }
+
             Text(
                 modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+                text = annotatedString,
+                fontSize = 20.sp
+            )
+
+            Text(
+                modifier = Modifier.padding(top = 16.dp, bottom = 64.dp),
                 fontSize = 20.sp,
-                text = "This project was created to help me get familiar with Google apps."
-                        + "\n\n"
-                        + "I hope you enjoy it, and have fun :-)"
-                        + "\n\n"
-                        + "Trevy Burgess"
-                        + "\n\n",
+                text = "Trevy Burgess",
             )
         }
     }
