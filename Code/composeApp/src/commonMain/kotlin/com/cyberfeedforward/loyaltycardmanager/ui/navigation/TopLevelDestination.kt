@@ -1,13 +1,13 @@
 package com.cyberfeedforward.loyaltycardmanager.ui.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -38,8 +38,8 @@ enum class TopLevelDestination(
     About(
         route = "about",
         label = "Help",
-        selectedIcon = Icons.Filled.Info,
-        unselectedIcon = Icons.Outlined.Info,
+        selectedIcon = Icons.AutoMirrored.Filled.Help,
+        unselectedIcon = Icons.AutoMirrored.Outlined.Help,
     ),
 }
 

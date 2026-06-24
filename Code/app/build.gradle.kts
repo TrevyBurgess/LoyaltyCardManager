@@ -11,7 +11,7 @@ android {
         applicationId = "com.cyberfeedforward.loyaltycardmanager"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
+        versionCode = 5
         versionName = "1.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -34,6 +34,9 @@ Here are the commands I used for setting up the app
 - Add logging to log all errors
 - On the Scanned Card dialog, the Type dropdown is shifting position when a user opens dropdown. Also, align the menu below the text
 - Add the message 'Click on Scan Button' to CardsScreen. Only show when number of cards is 0
+- Make the alert dialog for displaying card info movable
+- Make the dialog float above everything
+- Tapping outside the dialog should dismiss the dialog
 
 ## Settings
 
