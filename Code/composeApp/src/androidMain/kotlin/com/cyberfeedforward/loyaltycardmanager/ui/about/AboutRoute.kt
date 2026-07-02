@@ -93,7 +93,7 @@ fun AboutRoute(
             Text(
                 modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
                 fontSize = 20.sp,
-                text = "To add a new card, click the camera button.",
+                text = "To add a new card, click the camera button and scan the bar code on your card",
             )
 
             Text(
@@ -109,7 +109,7 @@ fun AboutRoute(
                 text = "We use the Google's API to scan bar codes. "
                         + "However, sometimes it returns some strange characters."
                         + "\n\n"
-                        + "Please make sure the card code is correct."
+                        + "Please make sure the Card Number is correct. "
             )
 
             Text(

@@ -38,6 +38,13 @@ Here are the commands I used for setting up the app
 - Make the dialog float above everything
 - Tapping outside the dialog should dismiss the dialog
 
+# Removing control characters
+- When scanning cards, add a flag to remove control characters from scanned code. Set default to true (Remove control characters)
+Default is in
+1: "remove_control_characters", true
+2: data class SettingsUiState
+
+
 ## Settings
 
 ## About

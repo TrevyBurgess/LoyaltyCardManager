@@ -47,10 +47,16 @@ class CardsViewModel : ViewModel() {
     fun onBarcodeScanned(
         value: String,
         type: ScannedCodeType,
+        removeControlCharacters: Boolean = true,
     ) {
+        val filteredValue = if (removeControlCharacters) {
+            value.filter { it.code >= 32 }
+        } else {
+            value
+        }
         _uiState.value = _uiState.value.copy(
             isScannerVisible = false,
-            scanResult = ScanResultUi.Success(value = value, type = type),
+            scanResult = ScanResultUi.Success(value = filteredValue, type = type),
         )
     }
 

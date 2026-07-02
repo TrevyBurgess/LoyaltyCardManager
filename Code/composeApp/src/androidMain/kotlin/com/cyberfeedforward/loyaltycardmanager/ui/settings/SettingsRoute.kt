@@ -14,6 +14,7 @@ fun SettingsRoute(
     SettingsScreen(
         uiState = uiState,
         onThemeModeChanged = viewModel::onThemeModeChanged,
+        onRemoveControlCharactersChanged = viewModel::onRemoveControlCharactersChanged,
     )
 }
 

@@ -50,15 +50,18 @@ import kotlin.math.roundToInt
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cyberfeedforward.loyaltycardmanager.ui.settings.SettingsViewModel
 import com.cyberfeedforward.loyaltycardmanager.util.Logger
 import java.io.File
 
 @Composable
 fun CardsRoute(
     viewModel: CardsViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val settingsUiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.initStorage(
@@ -174,7 +177,7 @@ fun CardsRoute(
                             if (scan != null && codeBitmap != null) {
                                 Image(
                                     bitmap = codeBitmap.asImageBitmap(),
-                                    contentDescription = "Card code",
+                                    contentDescription = "Card Number",
                                     modifier = if (scan.type.isQr) {
                                         Modifier.size(220.dp)
                                     } else {
@@ -278,7 +281,7 @@ fun CardsRoute(
                     if (codeBitmap != null) {
                         Image(
                             bitmap = codeBitmap.asImageBitmap(),
-                            contentDescription = "Card code",
+                            contentDescription = "Card Number",
                             modifier = if (editingType.isQr) {
                                 Modifier.fillMaxWidth()
                             } else {
@@ -301,8 +304,8 @@ fun CardsRoute(
                     OutlinedTextField(
                         value = editingCode,
                         onValueChange = { editingCode = it },
-                        label = { Text(text = "Card Code *") },
-                        placeholder = { Text(text = "What is your Card Code?") },
+                        label = { Text(text = "Card Number *") },
+                        placeholder = { Text(text = "What is your Card Number?") },
                         isError = isCodeError,
                         singleLine = true,
                     )
@@ -349,9 +352,10 @@ fun CardsRoute(
                         Text(
                             text = "Note: ",
                             color = Red,
-                            fontSize = 18.sp
+                            fontSize = 18.sp,
+
                         )
-                        Text(text = "Verify Card Code before saving")
+                        Text(text = "Please verify your Card Number is correct before saving")
                     }
                 }
             },
@@ -360,7 +364,13 @@ fun CardsRoute(
 
     if (uiState.isScannerVisible) {
         BarcodeScannerDialog(
-            onBarcodeScanned = viewModel::onBarcodeScanned,
+            onBarcodeScanned = { value, type ->
+                viewModel.onBarcodeScanned(
+                    value = value,
+                    type = type,
+                    removeControlCharacters = settingsUiState.removeControlCharacters
+                )
+            },
             onDismiss = viewModel::onScannerDismissed,
             onError = viewModel::onScanError,
         )
@@ -460,8 +470,8 @@ private fun ScanResultDialog(
                 OutlinedTextField(
                     value = scannedCode,
                     onValueChange = { scannedCode = it },
-                    label = { Text(text = "Card Code *") },
-                    placeholder = { Text(text = "What is your Card Code?") },
+                    label = { Text(text = "Card Number *") },
+                    placeholder = { Text(text = "What is your Card Number?") },
                     isError = isCodeError,
                     singleLine = true,
                 )
@@ -509,7 +519,7 @@ private fun ScanResultDialog(
                         color = Red,
                         fontSize = 18.sp
                     )
-                    Text(text = "Verify Card Code before saving")
+                    Text(text = "Please verify your Card Number is correct before saving")
                 }
             }
         },

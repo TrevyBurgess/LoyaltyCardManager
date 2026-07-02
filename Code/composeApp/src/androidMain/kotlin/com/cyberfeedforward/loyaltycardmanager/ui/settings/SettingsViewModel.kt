@@ -16,6 +16,7 @@ enum class ThemeMode {
 
 data class SettingsUiState(
     val themeMode: ThemeMode = ThemeMode.System,
+    val removeControlCharacters: Boolean = true,
 )
 
 class SettingsViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
@@ -25,7 +26,8 @@ class SettingsViewModel(private val sharedPreferences: SharedPreferences) : View
                 val modeName = sharedPreferences.getString("theme_mode", ThemeMode.System.name)
                 ThemeMode.valueOf(modeName ?: ThemeMode.System.name)
             }.onFailure { Logger.e("Failed to load theme mode", it) }
-                .getOrDefault(ThemeMode.System)
+                .getOrDefault(ThemeMode.System),
+            removeControlCharacters = sharedPreferences.getBoolean("remove_control_characters", true)
         )
     )
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
@@ -33,6 +35,11 @@ class SettingsViewModel(private val sharedPreferences: SharedPreferences) : View
     fun onThemeModeChanged(mode: ThemeMode) {
         sharedPreferences.edit().putString("theme_mode", mode.name).apply()
         _uiState.value = _uiState.value.copy(themeMode = mode)
+    }
+
+    fun onRemoveControlCharactersChanged(remove: Boolean) {
+        sharedPreferences.edit().putBoolean("remove_control_characters", remove).apply()
+        _uiState.value = _uiState.value.copy(removeControlCharacters = remove)
     }
 
     class Factory(private val sharedPreferences: SharedPreferences) : ViewModelProvider.Factory {
