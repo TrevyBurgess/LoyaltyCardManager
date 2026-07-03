@@ -123,7 +123,10 @@ fun ThemeModeComboBox(
 private fun SettingsScreenPreview() {
     LoyaltyCardManagerTheme {
         SettingsScreen(
-            uiState = SettingsUiState(themeMode = ThemeMode.Dark, removeControlCharacters = true),
+            uiState = SettingsUiState(
+                themeMode = ThemeMode.Dark,
+                removeControlCharacters = true,
+            ),
             onThemeModeChanged = {},
             onRemoveControlCharactersChanged = {},
         )

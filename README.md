@@ -44,6 +44,7 @@ Default is in
 1: "remove_control_characters", true
 2: data class SettingsUiState
 
+- Add a persistent flag to the Scanned Card dialog. When true, hide non-numeric characters from the QR or Bar code.
 
 ## Settings
 

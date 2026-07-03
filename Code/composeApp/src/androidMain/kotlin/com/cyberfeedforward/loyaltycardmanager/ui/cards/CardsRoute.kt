@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -72,6 +73,7 @@ fun CardsRoute(
     var editingName by rememberSaveable { mutableStateOf("") }
     var editingCode by rememberSaveable { mutableStateOf("") }
     var editingTypeName by rememberSaveable { mutableStateOf(ScannedCodeType.Barcode1D.name) }
+    var editingOnlyNumbers by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(uiState.editingIndex) {
         val index = uiState.editingIndex
@@ -81,9 +83,13 @@ fun CardsRoute(
                 editingName = scan.name
                 editingCode = scan.code
                 editingTypeName = scan.type.name
+                editingOnlyNumbers = scan.onlyNumbers
             }
         }
     }
+
+    // var hasCameraPermission by ... (no change to the rest of the file yet, but removing the LaunchedEffect that filters editingCode)
+
 
     var hasCameraPermission by remember {
         mutableStateOf(
@@ -121,10 +127,11 @@ fun CardsRoute(
 
     if (uiState.viewingIndex != null) {
         val scan = uiState.savedScans.getOrNull(uiState.viewingIndex!!)
-        val codeBitmap = remember(scan?.code, scan?.type) {
+        val codeBitmap = remember(scan?.code, scan?.type, scan?.onlyNumbers) {
             if (scan == null) return@remember null
+            val codeToGenerate = if (scan.onlyNumbers) scan.code.filter { it.isDigit() } else scan.code
             generateCodeBitmapSafely(
-                value = scan.code,
+                value = codeToGenerate,
                 type = scan.type,
             )
         }
@@ -237,10 +244,11 @@ fun CardsRoute(
             ScannedCodeType.entries.firstOrNull { it.name == editingTypeName }
                 ?: ScannedCodeType.Barcode1D
         }
-        val codeBitmap = remember(editingCode, editingType) {
+        val codeBitmap = remember(editingCode, editingType, editingOnlyNumbers) {
             if (editingCode.isBlank()) return@remember null
+            val codeToGenerate = if (editingOnlyNumbers) editingCode.filter { it.isDigit() } else editingCode
             generateCodeBitmapSafely(
-                value = editingCode,
+                value = codeToGenerate,
                 type = editingType,
             )
         }
@@ -261,6 +269,7 @@ fun CardsRoute(
                                 name = editingName,
                                 code = editingCode,
                                 type = editingType,
+                                onlyNumbers = editingOnlyNumbers,
                             )
                         )
                     }
@@ -346,6 +355,21 @@ fun CardsRoute(
                     }
 
                     Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Checkbox(
+                            checked = editingOnlyNumbers,
+                            onCheckedChange = { editingOnlyNumbers = it }
+                        )
+                        Text(
+                            text = "Show numbers only",
+                            fontSize = 18.sp
+                        )
+                    }
+
+                    Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -401,6 +425,8 @@ private fun ScanResultDialog(
 ) {
     var cardName by rememberSaveable { mutableStateOf("") }
     var scannedCode by rememberSaveable(message) { mutableStateOf(message) }
+    var onlyNumbers by rememberSaveable { mutableStateOf(false) }
+
     var scannedTypeName by rememberSaveable(type) { mutableStateOf(type.name) }
     val scannedType = remember(scannedTypeName) {
         ScannedCodeType.entries.firstOrNull { it.name == scannedTypeName }
@@ -410,10 +436,11 @@ private fun ScanResultDialog(
     val isNameError = cardName.isBlank()
     val isCodeError = scannedCode.isBlank()
 
-    val codeBitmap = remember(scannedCode, scannedType) {
+    val codeBitmap = remember(scannedCode, scannedType, onlyNumbers) {
         if (scannedCode.isBlank()) return@remember null
+        val codeToGenerate = if (onlyNumbers) scannedCode.filter { it.isDigit() } else scannedCode
         generateCodeBitmapSafely(
-            value = scannedCode,
+            value = codeToGenerate,
             type = scannedType,
         )
     }
@@ -429,6 +456,7 @@ private fun ScanResultDialog(
                             name = cardName,
                             code = scannedCode,
                             type = scannedType,
+                            onlyNumbers = onlyNumbers,
                         )
                     )
                 },
@@ -508,6 +536,21 @@ private fun ScanResultDialog(
                             }
                         }
                     }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Checkbox(
+                        checked = onlyNumbers,
+                        onCheckedChange = { onlyNumbers = it }
+                    )
+                    Text(
+                        text = "Show numbers only",
+                        fontSize = 18.sp
+                    )
                 }
 
                 Row(

@@ -98,6 +98,20 @@ fun AboutRoute(
 
             Text(
                 fontSize = 25.sp,
+                text = "Numbers Only",
+                color = MaterialTheme.colorScheme.primary,
+                textDecoration = TextDecoration.Underline,
+            )
+
+            Text(
+                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp),
+                fontSize = 20.sp,
+                text = "By default we show only numbers. "
+                        + "You can toggle this behavior when you edit a card."
+            )
+
+            Text(
+                fontSize = 25.sp,
                 text = "Note",
                 color = MaterialTheme.colorScheme.primary,
                 textDecoration = TextDecoration.Underline,
