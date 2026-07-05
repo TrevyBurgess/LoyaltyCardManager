@@ -13,6 +13,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,6 +30,7 @@ import com.cyberfeedforward.loyaltycardmanager.ui.theme.LoyaltyCardManagerTheme
 fun SettingsScreen(
     uiState: SettingsUiState,
     onThemeModeChanged: (ThemeMode) -> Unit,
+    onRemoveControlCharactersChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -52,6 +54,21 @@ fun SettingsScreen(
                 selectedMode = uiState.themeMode,
                 onModeSelected = onThemeModeChanged,
             )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Switch(
+                checked = uiState.removeControlCharacters,
+                onCheckedChange = onRemoveControlCharactersChanged,
+            )
+
+            Text(text = "Remove control characters from scan")
         }
     }
 }
@@ -106,8 +123,12 @@ fun ThemeModeComboBox(
 private fun SettingsScreenPreview() {
     LoyaltyCardManagerTheme {
         SettingsScreen(
-            uiState = SettingsUiState(themeMode = ThemeMode.Dark),
+            uiState = SettingsUiState(
+                themeMode = ThemeMode.Dark,
+                removeControlCharacters = true,
+            ),
             onThemeModeChanged = {},
+            onRemoveControlCharactersChanged = {},
         )
     }
 }

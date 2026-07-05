@@ -26,7 +26,7 @@ fun LoyaltyCardManagerNavHost(
             HomeRoute()
         }
         composable(route = TopLevelDestination.Cards.route) {
-            CardsRoute()
+            CardsRoute(settingsViewModel = settingsViewModel)
         }
         composable(route = TopLevelDestination.Settings.route) {
             SettingsRoute(viewModel = settingsViewModel)

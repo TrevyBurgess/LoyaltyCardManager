@@ -12,6 +12,7 @@ class ScanHistoryStorage(
         val name: String,
         val code: String,
         val type: ScannedCodeType,
+        val onlyNumbers: Boolean = false,
     )
 
     fun append(scan: SavedScan) {
@@ -21,6 +22,7 @@ class ScanHistoryStorage(
                 .put("name", scan.name)
                 .put("code", scan.code)
                 .put("type", scan.type.name)
+                .put("onlyNumbers", scan.onlyNumbers)
         )
         writeArray(array)
     }
@@ -38,6 +40,7 @@ class ScanHistoryStorage(
             .put("name", scan.name)
             .put("code", scan.code)
             .put("type", scan.type.name)
+            .put("onlyNumbers", scan.onlyNumbers)
 
         array.put(index, obj)
         writeArray(array)
@@ -65,7 +68,8 @@ class ScanHistoryStorage(
                 val typeName = obj.optString("type", ScannedCodeType.Barcode1D.name)
                 val type = ScannedCodeType.entries.firstOrNull { it.name == typeName }
                     ?: ScannedCodeType.Barcode1D
-                add(SavedScan(name = name, code = code, type = type))
+                val onlyNumbers = obj.optBoolean("onlyNumbers", false)
+                add(SavedScan(name = name, code = code, type = type, onlyNumbers = onlyNumbers))
             }
         }
     }

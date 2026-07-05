@@ -34,6 +34,20 @@ Here are the commands I used for setting up the app
 - Add logging to log all errors
 - On the Scanned Card dialog, the Type dropdown is shifting position when a user opens dropdown. Also, align the menu below the text
 - Add the message 'Click on Scan Button' to CardsScreen. Only show when number of cards is 0
+- Make the alert dialog for displaying card info movable
+- Make the dialog float above everything
+- Tapping outside the dialog should dismiss the dialog
+
+# Removing control characters
+- When scanning cards, add a flag to remove control characters from scanned code. Set default to true (Remove control characters)
+Default is in
+1: "remove_control_characters", true
+2: data class SettingsUiState
+
+- Add a persistent flag to the Scanned Card dialog. When true, hide non-numeric characters from the QR or Bar code.
+- Leave the original code unchanged. Only change the image displayed, depending on the flag
+- Make the flag setting individual for each card
+- Add displayed code to card display dialog
 
 ## Settings
 

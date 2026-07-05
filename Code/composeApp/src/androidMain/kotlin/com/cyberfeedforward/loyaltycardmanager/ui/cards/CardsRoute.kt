@@ -6,17 +6,23 @@ import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,26 +31,38 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import kotlin.math.roundToInt
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.cyberfeedforward.loyaltycardmanager.ui.settings.SettingsViewModel
 import com.cyberfeedforward.loyaltycardmanager.util.Logger
 import java.io.File
 
 @Composable
 fun CardsRoute(
     viewModel: CardsViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val settingsUiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.initStorage(
@@ -55,6 +73,7 @@ fun CardsRoute(
     var editingName by rememberSaveable { mutableStateOf("") }
     var editingCode by rememberSaveable { mutableStateOf("") }
     var editingTypeName by rememberSaveable { mutableStateOf(ScannedCodeType.Barcode1D.name) }
+    var editingOnlyNumbers by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(uiState.editingIndex) {
         val index = uiState.editingIndex
@@ -64,9 +83,13 @@ fun CardsRoute(
                 editingName = scan.name
                 editingCode = scan.code
                 editingTypeName = scan.type.name
+                editingOnlyNumbers = scan.onlyNumbers
             }
         }
     }
+
+    // var hasCameraPermission by ... (no change to the rest of the file yet, but removing the LaunchedEffect that filters editingCode)
+
 
     var hasCameraPermission by remember {
         mutableStateOf(
@@ -104,49 +127,105 @@ fun CardsRoute(
 
     if (uiState.viewingIndex != null) {
         val scan = uiState.savedScans.getOrNull(uiState.viewingIndex!!)
-        val codeBitmap = remember(scan?.code, scan?.type) {
-            if (scan == null) return@remember null
+        val displayCode = remember(scan?.code, scan?.onlyNumbers) {
+            if (scan == null) return@remember ""
+            if (scan.onlyNumbers) scan.code.filter { it.isDigit() } else scan.code
+        }
+        val codeBitmap = remember(displayCode, scan?.type) {
+            if (scan == null || displayCode.isBlank()) return@remember null
             generateCodeBitmapSafely(
-                value = scan.code,
+                value = displayCode,
                 type = scan.type,
             )
         }
 
-        AlertDialog(
-            onDismissRequest = viewModel::onDismissView,
-            confirmButton = {
-                TextButton(onClick = viewModel::onDismissView) {
-                    Text(text = "OK")
-                }
-            },
-            title = {
-                Text(text = scan?.name.orEmpty())
-            },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    if (scan != null && codeBitmap != null) {
-                        Image(
-                            bitmap = codeBitmap.asImageBitmap(),
-                            contentDescription = "Card code",
-                            modifier = if (scan.type.isQr) {
-                                Modifier.size(220.dp)
-                            } else {
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(120.dp)
-                            },
-                        )
-                    }
+        var offsetX by remember { mutableFloatStateOf(0f) }
+        var offsetY by remember { mutableFloatStateOf(0f) }
 
-                    if (scan != null) {
-                        Text(
-                            text = scan.code,
-                            fontSize = 20.sp,
+        Dialog(
+            onDismissRequest = viewModel::onDismissView,
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = viewModel::onDismissView
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    tonalElevation = 6.dp,
+                    modifier = Modifier
+                        .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                        .pointerInput(Unit) {
+                            detectDragGestures { change, dragAmount ->
+                                change.consume()
+                                offsetX += dragAmount.x
+                                offsetY += dragAmount.y
+                            }
+                        }
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            onClick = { /* prevent click-through to background Box */ }
                         )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = scan?.name.orEmpty(),
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            if (scan != null && codeBitmap != null) {
+                                Image(
+                                    bitmap = codeBitmap.asImageBitmap(),
+                                    contentDescription = "Card Number",
+                                    modifier = if (scan.type.isQr) {
+                                        Modifier.size(220.dp)
+                                    } else {
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(120.dp)
+                                    },
+                                )
+                            }
+
+                            if (scan != null) {
+                                if (scan.onlyNumbers && scan.code != displayCode) {
+                                    Text(
+                                        text = displayCode,
+                                        fontSize = 20.sp,
+                                    )
+                                }
+                                else {
+                                    Text(
+                                        text = scan.code,
+                                        fontSize = 20.sp,
+                                    )
+                                }
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            TextButton(onClick = viewModel::onDismissView) {
+                                Text(text = "OK")
+                            }
+                        }
                     }
                 }
-            },
-        )
+            }
+        }
     }
 
     if (uiState.pendingDeleteIndex != null) {
@@ -176,10 +255,11 @@ fun CardsRoute(
             ScannedCodeType.entries.firstOrNull { it.name == editingTypeName }
                 ?: ScannedCodeType.Barcode1D
         }
-        val codeBitmap = remember(editingCode, editingType) {
+        val codeBitmap = remember(editingCode, editingType, editingOnlyNumbers) {
             if (editingCode.isBlank()) return@remember null
+            val codeToGenerate = if (editingOnlyNumbers) editingCode.filter { it.isDigit() } else editingCode
             generateCodeBitmapSafely(
-                value = editingCode,
+                value = codeToGenerate,
                 type = editingType,
             )
         }
@@ -200,6 +280,7 @@ fun CardsRoute(
                                 name = editingName,
                                 code = editingCode,
                                 type = editingType,
+                                onlyNumbers = editingOnlyNumbers,
                             )
                         )
                     }
@@ -220,7 +301,7 @@ fun CardsRoute(
                     if (codeBitmap != null) {
                         Image(
                             bitmap = codeBitmap.asImageBitmap(),
-                            contentDescription = "Card code",
+                            contentDescription = "Card Number",
                             modifier = if (editingType.isQr) {
                                 Modifier.fillMaxWidth()
                             } else {
@@ -243,8 +324,8 @@ fun CardsRoute(
                     OutlinedTextField(
                         value = editingCode,
                         onValueChange = { editingCode = it },
-                        label = { Text(text = "Card Code *") },
-                        placeholder = { Text(text = "What is your Card Code?") },
+                        label = { Text(text = "Card Number *") },
+                        placeholder = { Text(text = "What is your Card Number?") },
                         isError = isCodeError,
                         singleLine = true,
                     )
@@ -285,15 +366,31 @@ fun CardsRoute(
                     }
 
                     Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Checkbox(
+                            checked = editingOnlyNumbers,
+                            onCheckedChange = { editingOnlyNumbers = it }
+                        )
+                        Text(
+                            text = "Show numbers only",
+                            fontSize = 18.sp
+                        )
+                    }
+
+                    Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Note: ",
+                            text = "Note:\n",
                             color = Red,
-                            fontSize = 18.sp
-                        )
-                        Text(text = "Verify Card Code before saving")
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(end = 10.dp),
+                            )
+                        Text(text = "Please verify your Card Number is correct before saving")
                     }
                 }
             },
@@ -302,7 +399,13 @@ fun CardsRoute(
 
     if (uiState.isScannerVisible) {
         BarcodeScannerDialog(
-            onBarcodeScanned = viewModel::onBarcodeScanned,
+            onBarcodeScanned = { value, type ->
+                viewModel.onBarcodeScanned(
+                    value = value,
+                    type = type,
+                    removeControlCharacters = settingsUiState.removeControlCharacters
+                )
+            },
             onDismiss = viewModel::onScannerDismissed,
             onError = viewModel::onScanError,
         )
@@ -333,6 +436,8 @@ private fun ScanResultDialog(
 ) {
     var cardName by rememberSaveable { mutableStateOf("") }
     var scannedCode by rememberSaveable(message) { mutableStateOf(message) }
+    var onlyNumbers by rememberSaveable { mutableStateOf(false) }
+
     var scannedTypeName by rememberSaveable(type) { mutableStateOf(type.name) }
     val scannedType = remember(scannedTypeName) {
         ScannedCodeType.entries.firstOrNull { it.name == scannedTypeName }
@@ -342,10 +447,11 @@ private fun ScanResultDialog(
     val isNameError = cardName.isBlank()
     val isCodeError = scannedCode.isBlank()
 
-    val codeBitmap = remember(scannedCode, scannedType) {
+    val codeBitmap = remember(scannedCode, scannedType, onlyNumbers) {
         if (scannedCode.isBlank()) return@remember null
+        val codeToGenerate = if (onlyNumbers) scannedCode.filter { it.isDigit() } else scannedCode
         generateCodeBitmapSafely(
-            value = scannedCode,
+            value = codeToGenerate,
             type = scannedType,
         )
     }
@@ -361,6 +467,7 @@ private fun ScanResultDialog(
                             name = cardName,
                             code = scannedCode,
                             type = scannedType,
+                            onlyNumbers = onlyNumbers,
                         )
                     )
                 },
@@ -402,8 +509,8 @@ private fun ScanResultDialog(
                 OutlinedTextField(
                     value = scannedCode,
                     onValueChange = { scannedCode = it },
-                    label = { Text(text = "Card Code *") },
-                    placeholder = { Text(text = "What is your Card Code?") },
+                    label = { Text(text = "Card Number *") },
+                    placeholder = { Text(text = "What is your Card Number?") },
                     isError = isCodeError,
                     singleLine = true,
                 )
@@ -443,15 +550,31 @@ private fun ScanResultDialog(
                 }
 
                 Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Checkbox(
+                        checked = onlyNumbers,
+                        onCheckedChange = { onlyNumbers = it }
+                    )
+                    Text(
+                        text = "Show numbers only",
+                        fontSize = 18.sp
+                    )
+                }
+
+                Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Note: ",
+                        text = "Note:\n",
                         color = Red,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(end = 10.dp),
                     )
-                    Text(text = "Verify Card Code before saving")
+                    Text(text = "Please verify your Card Number is correct before saving")
                 }
             }
         },
