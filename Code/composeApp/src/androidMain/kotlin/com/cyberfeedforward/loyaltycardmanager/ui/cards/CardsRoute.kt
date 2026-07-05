@@ -127,11 +127,14 @@ fun CardsRoute(
 
     if (uiState.viewingIndex != null) {
         val scan = uiState.savedScans.getOrNull(uiState.viewingIndex!!)
-        val codeBitmap = remember(scan?.code, scan?.type, scan?.onlyNumbers) {
-            if (scan == null) return@remember null
-            val codeToGenerate = if (scan.onlyNumbers) scan.code.filter { it.isDigit() } else scan.code
+        val displayCode = remember(scan?.code, scan?.onlyNumbers) {
+            if (scan == null) return@remember ""
+            if (scan.onlyNumbers) scan.code.filter { it.isDigit() } else scan.code
+        }
+        val codeBitmap = remember(displayCode, scan?.type) {
+            if (scan == null || displayCode.isBlank()) return@remember null
             generateCodeBitmapSafely(
-                value = codeToGenerate,
+                value = displayCode,
                 type = scan.type,
             )
         }
@@ -196,10 +199,18 @@ fun CardsRoute(
                             }
 
                             if (scan != null) {
-                                Text(
-                                    text = scan.code,
-                                    fontSize = 20.sp,
-                                )
+                                if (scan.onlyNumbers && scan.code != displayCode) {
+                                    Text(
+                                        text = displayCode,
+                                        fontSize = 20.sp,
+                                    )
+                                }
+                                else {
+                                    Text(
+                                        text = scan.code,
+                                        fontSize = 20.sp,
+                                    )
+                                }
                             }
                         }
 
@@ -374,11 +385,11 @@ fun CardsRoute(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Note: ",
+                            text = "Note:\n",
                             color = Red,
                             fontSize = 18.sp,
-
-                        )
+                            modifier = Modifier.padding(end = 10.dp),
+                            )
                         Text(text = "Please verify your Card Number is correct before saving")
                     }
                 }
@@ -558,9 +569,10 @@ private fun ScanResultDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Note: ",
+                        text = "Note:\n",
                         color = Red,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(end = 10.dp),
                     )
                     Text(text = "Please verify your Card Number is correct before saving")
                 }

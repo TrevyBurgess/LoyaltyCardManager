@@ -45,6 +45,9 @@ Default is in
 2: data class SettingsUiState
 
 - Add a persistent flag to the Scanned Card dialog. When true, hide non-numeric characters from the QR or Bar code.
+- Leave the original code unchanged. Only change the image displayed, depending on the flag
+- Make the flag setting individual for each card
+- Add displayed code to card display dialog
 
 ## Settings
 
