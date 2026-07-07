@@ -188,27 +188,27 @@ fun CardsRoute(
                                 Image(
                                     bitmap = codeBitmap.asImageBitmap(),
                                     contentDescription = "Card Number",
-                                    modifier = if (scan.type.isQr) {
-                                        Modifier.size(220.dp)
-                                    } else {
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .height(120.dp)
-                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp)
                                 )
                             }
 
                             if (scan != null) {
                                 if (scan.onlyNumbers && scan.code != displayCode) {
                                     Text(
-                                        text = displayCode,
-                                        fontSize = 20.sp,
+                                        text = scan.code,
+                                        fontSize = 16.sp,
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        style = MaterialTheme.typography.bodyMedium
                                     )
                                 }
                                 else {
                                     Text(
-                                        text = scan.code,
-                                        fontSize = 20.sp,
+                                        text = displayCode,
+                                        fontSize = 16.sp,
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        style = MaterialTheme.typography.bodyMedium
                                     )
                                 }
                             }
@@ -255,11 +255,13 @@ fun CardsRoute(
             ScannedCodeType.entries.firstOrNull { it.name == editingTypeName }
                 ?: ScannedCodeType.Barcode1D
         }
-        val codeBitmap = remember(editingCode, editingType, editingOnlyNumbers) {
-            if (editingCode.isBlank()) return@remember null
-            val codeToGenerate = if (editingOnlyNumbers) editingCode.filter { it.isDigit() } else editingCode
+        val displayCode = remember(editingCode, editingOnlyNumbers) {
+            if (editingOnlyNumbers) editingCode.filter { it.isDigit() } else editingCode
+        }
+        val codeBitmap = remember(displayCode, editingType) {
+            if (displayCode.isBlank()) return@remember null
             generateCodeBitmapSafely(
-                value = codeToGenerate,
+                value = displayCode,
                 type = editingType,
             )
         }
@@ -307,10 +309,17 @@ fun CardsRoute(
                             } else {
                                 Modifier
                                     .fillMaxWidth()
-                                    .height(100.dp)
+                                    .height(80.dp)
                             },
                         )
                     }
+
+                    Text(
+                        text = if (editingOnlyNumbers) displayCode else editingCode,
+                        fontSize = 20.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
 
                     OutlinedTextField(
                         value = editingName,
@@ -380,18 +389,18 @@ fun CardsRoute(
                         )
                     }
 
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Note:\n",
-                            color = Red,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(end = 10.dp),
-                            )
-                        Text(text = "Please verify your Card Number is correct before saving")
-                    }
+//                    Row(
+//                        horizontalArrangement = Arrangement.SpaceBetween,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Text(
+//                            text = "Note:\n",
+//                            color = Red,
+//                            fontSize = 18.sp,
+//                            modifier = Modifier.padding(end = 10.dp),
+//                            )
+//                        Text(text = "Please verify your Card Number is correct before saving")
+//                    }
                 }
             },
         )
@@ -447,11 +456,13 @@ private fun ScanResultDialog(
     val isNameError = cardName.isBlank()
     val isCodeError = scannedCode.isBlank()
 
-    val codeBitmap = remember(scannedCode, scannedType, onlyNumbers) {
-        if (scannedCode.isBlank()) return@remember null
-        val codeToGenerate = if (onlyNumbers) scannedCode.filter { it.isDigit() } else scannedCode
+    val displayCode = remember(scannedCode, onlyNumbers) {
+        if (onlyNumbers) scannedCode.filter { it.isDigit() } else scannedCode
+    }
+    val codeBitmap = remember(displayCode, scannedType) {
+        if (displayCode.isBlank()) return@remember null
         generateCodeBitmapSafely(
-            value = codeToGenerate,
+            value = displayCode,
             type = scannedType,
         )
     }
@@ -492,10 +503,18 @@ private fun ScanResultDialog(
                         } else {
                             Modifier
                                 .fillMaxWidth()
-                                .height(120.dp)
+                                .height(80.dp)
                         },
                     )
                 }
+
+
+                Text(
+                    text = if (onlyNumbers) displayCode else scannedCode,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium
+                )
 
                 OutlinedTextField(
                     value = cardName,
@@ -506,14 +525,14 @@ private fun ScanResultDialog(
                     singleLine = true,
                 )
 
-                OutlinedTextField(
-                    value = scannedCode,
-                    onValueChange = { scannedCode = it },
-                    label = { Text(text = "Card Number *") },
-                    placeholder = { Text(text = "What is your Card Number?") },
-                    isError = isCodeError,
-                    singleLine = true,
-                )
+//                OutlinedTextField(
+//                    value = scannedCode,
+//                    onValueChange = { scannedCode = it },
+//                    label = { Text(text = "Card Number *") },
+//                    placeholder = { Text(text = "What is your Card Number?") },
+//                    isError = isCodeError,
+//                    singleLine = true,
+//                ),
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -571,11 +590,25 @@ private fun ScanResultDialog(
                     Text(
                         text = "Note:\n",
                         color = Red,
-                        fontSize = 18.sp,
+                        fontSize = 20.sp,
                         modifier = Modifier.padding(end = 10.dp),
                     )
-                    Text(text = "Please verify your Card Number is correct before saving")
+                    Text(text = "Uncheck if your card had letters or symbols",
+                        fontSize = 18.sp,)
                 }
+
+//                Row(
+//                    horizontalArrangement = Arrangement.SpaceBetween,
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Text(
+//                        text = "Note:\n",
+//                        color = Red,
+//                        fontSize = 18.sp,
+//                        modifier = Modifier.padding(end = 10.dp),
+//                    )
+//                    Text(text = "Please verify your Card Number is correct before saving")
+//                }
             }
         },
     )
