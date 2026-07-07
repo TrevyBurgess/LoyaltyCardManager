@@ -436,7 +436,7 @@ private fun ScanResultDialog(
 ) {
     var cardName by rememberSaveable { mutableStateOf("") }
     var scannedCode by rememberSaveable(message) { mutableStateOf(message) }
-    var onlyNumbers by rememberSaveable { mutableStateOf(false) }
+    var onlyNumbers by rememberSaveable { mutableStateOf(true) }
 
     var scannedTypeName by rememberSaveable(type) { mutableStateOf(type.name) }
     val scannedType = remember(scannedTypeName) {
