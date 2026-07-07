@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
@@ -190,27 +189,16 @@ fun CardsRoute(
                                     contentDescription = "Card Number",
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(200.dp)
                                 )
                             }
 
                             if (scan != null) {
-                                if (scan.onlyNumbers && scan.code != displayCode) {
-                                    Text(
-                                        text = scan.code,
-                                        fontSize = 16.sp,
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                                else {
-                                    Text(
-                                        text = displayCode,
-                                        fontSize = 16.sp,
-                                        color = MaterialTheme.colorScheme.secondary,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
+                                Text(
+                                    text = displayCode,
+                                    fontSize = 18.sp,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
                             }
                         }
 
@@ -508,7 +496,6 @@ private fun ScanResultDialog(
                     )
                 }
 
-
                 Text(
                     text = if (onlyNumbers) displayCode else scannedCode,
                     fontSize = 20.sp,
@@ -587,13 +574,13 @@ private fun ScanResultDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Note:\n",
-                        color = Red,
-                        fontSize = 20.sp,
-                        modifier = Modifier.padding(end = 10.dp),
-                    )
-                    Text(text = "Uncheck if your card had letters or symbols",
+//                    Text(
+//                        text = "Note:\n",
+//                        color = Red,
+//                        fontSize = 20.sp,
+//                        modifier = Modifier.padding(end = 10.dp),
+//                    )
+                    Text(text = "Uncheck if your card has letters or symbols",
                         fontSize = 18.sp,)
                 }
 
