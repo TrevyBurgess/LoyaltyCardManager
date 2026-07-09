@@ -48,6 +48,7 @@ Default is in
 - Leave the original code unchanged. Only change the image displayed, depending on the flag
 - Make the flag setting individual for each card
 - Add displayed code to card display dialog
+- Add displayed code to the 'Edit' and 'Scanned Card' dialogs
 
 ## Settings
 

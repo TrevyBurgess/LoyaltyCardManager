@@ -34,12 +34,12 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -362,21 +362,21 @@ fun CardsRoute(
                         }
                     }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Checkbox(
-                            checked = editingOnlyNumbers,
-                            onCheckedChange = { editingOnlyNumbers = it }
-                        )
-                        Text(
-                            text = "Show numbers only",
-                            fontSize = 18.sp
-                        )
-                    }
-
+//                    Row(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+//                    ) {
+//                        Checkbox(
+//                            checked = editingOnlyNumbers,
+//                            onCheckedChange = { editingOnlyNumbers = it }
+//                        )
+//                        Text(
+//                            text = "Show numbers only",
+//                            fontSize = 18.sp
+//                        )
+//                    }
+//
 //                    Row(
 //                        horizontalArrangement = Arrangement.SpaceBetween,
 //                        verticalAlignment = Alignment.CenterVertically
@@ -433,7 +433,8 @@ private fun ScanResultDialog(
 ) {
     var cardName by rememberSaveable { mutableStateOf("") }
     var scannedCode by rememberSaveable(message) { mutableStateOf(message) }
-    var onlyNumbers by rememberSaveable { mutableStateOf(true) }
+    // Default flag for "Show numbers only"
+    var onlyNumbers by rememberSaveable { mutableStateOf(false) }
 
     var scannedTypeName by rememberSaveable(type) { mutableStateOf(type.name) }
     val scannedType = remember(scannedTypeName) {
@@ -512,14 +513,27 @@ private fun ScanResultDialog(
                     singleLine = true,
                 )
 
-//                OutlinedTextField(
-//                    value = scannedCode,
-//                    onValueChange = { scannedCode = it },
-//                    label = { Text(text = "Card Number *") },
-//                    placeholder = { Text(text = "What is your Card Number?") },
-//                    isError = isCodeError,
-//                    singleLine = true,
-//                ),
+                OutlinedTextField(
+                    value = scannedCode,
+                    onValueChange = { scannedCode = it },
+                    label = { Text(text = "Card Number *") },
+                    placeholder = { Text(text = "What is your Card Number?") },
+                    isError = isCodeError,
+                    singleLine = true,
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Note:",
+                        color = Red,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(end = 10.dp),
+                    )
+                    Text(text = "Verify Card Number is correct")
+                }
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -555,35 +569,21 @@ private fun ScanResultDialog(
                     }
                 }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Checkbox(
-                        checked = onlyNumbers,
-                        onCheckedChange = { onlyNumbers = it }
-                    )
-                    Text(
-                        text = "Show numbers only",
-                        fontSize = 18.sp
-                    )
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-//                    Text(
-//                        text = "Note:\n",
-//                        color = Red,
-//                        fontSize = 20.sp,
-//                        modifier = Modifier.padding(end = 10.dp),
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+//                ) {
+//                    Checkbox(
+//                        checked = onlyNumbers,
+//                        onCheckedChange = { onlyNumbers = it }
 //                    )
-                    Text(text = "Uncheck if your card has letters or symbols",
-                        fontSize = 18.sp,)
-                }
-
+//                    Text(
+//                        text = "Show numbers only",
+//                        fontSize = 18.sp
+//                    )
+//                }
+//
 //                Row(
 //                    horizontalArrangement = Arrangement.SpaceBetween,
 //                    verticalAlignment = Alignment.CenterVertically
@@ -594,7 +594,7 @@ private fun ScanResultDialog(
 //                        fontSize = 18.sp,
 //                        modifier = Modifier.padding(end = 10.dp),
 //                    )
-//                    Text(text = "Please verify your Card Number is correct before saving")
+//                    Text(text = "Uncheck if your card has letters or symbols")
 //                }
             }
         },

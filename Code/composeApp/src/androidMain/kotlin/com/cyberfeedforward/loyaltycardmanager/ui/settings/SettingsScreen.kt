@@ -56,20 +56,20 @@ fun SettingsScreen(
             )
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Switch(
-                checked = uiState.removeControlCharacters,
-                onCheckedChange = onRemoveControlCharactersChanged,
-            )
-
-            Text(text = "Remove control characters from scan")
-        }
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 24.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//        ) {
+//            Switch(
+//                checked = uiState.removeControlCharacters,
+//                onCheckedChange = onRemoveControlCharactersChanged,
+//            )
+//
+//            Text(text = "Remove control characters from scan")
+//        }
     }
 }
 
