@@ -1,0 +1,4 @@
+- [x] Refactor `MainHostScreen.kt` to use dynamic `WindowInsets`
+- [x] Refactor `CardsScreen.kt` to improve Edge-to-Edge layout
+- [x] Verify build
+- [x] Create walkthrough

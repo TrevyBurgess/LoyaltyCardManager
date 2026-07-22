@@ -74,6 +74,7 @@ fun MainHostScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .padding(innerPadding)
                 .padding(start = 16.dp, end = 16.dp)
                 .fillMaxWidth()
                 .fillMaxHeight(),
@@ -81,7 +82,7 @@ fun MainHostScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 60.dp, bottom = 10.dp),
+                    .padding(top = 16.dp, bottom = 10.dp),
                 horizontalArrangement = Arrangement.Center,
             ) {
                 Text(
@@ -95,7 +96,7 @@ fun MainHostScreen(
             LoyaltyCardManagerNavHost(
                 navController = navController,
                 settingsViewModel = settingsViewModel,
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier,
             )
         }
     }

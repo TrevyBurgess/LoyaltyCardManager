@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 fun AboutRoute(
     modifier: Modifier = Modifier,
 ) {
-    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = modifier) {
         val isTablet = maxWidth >= 600.dp
         val scrollState = rememberScrollState()
 
@@ -36,7 +36,7 @@ fun AboutRoute(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(0.dp),
+                .padding(horizontal = 0.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
         ) {
